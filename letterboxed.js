@@ -15,6 +15,23 @@ class Node {
     }
 }
 
+class Fool {
+    constructor(id, depth) {
+        this.id = id;
+        this.depth = depth;
+        this.children = [];
+    }
+}
+
+class Result {
+    constructor() {
+        this.allWords = {};
+        this.startsWith = {};
+        this.endsWith = {};
+        this.rating = {};
+    }
+}
+
 /**
  * Determines if a letter combination is a valid move. Source and destination
  * values range from -1 to 11. A source value of -1 indicates that the destination
@@ -76,6 +93,16 @@ function buildTree(word, currentNode, depth) {
     return maxChildDepth;
 }
 
+function rateWord(word) {
+
+    let i;
+    let uniqueLetters = new Set();
+    for (i = 0; i < word.length; i++) {
+        uniqueLetters.add(word[i]);
+    }
+    return uniqueLetters.size;
+}
+
 /**
  * Generates an array of words that can be spelled in the puzzle. A tree is built
  * for each word but we only record whether the word can be spelled at least one
@@ -87,29 +114,43 @@ function buildTree(word, currentNode, depth) {
  * @returns an array of words that can be spelled in the puzzle
  */
 function findWords(words) {
-    let foundWords = [];
+    let result = new Result();
     // Loop through each word and check if depth reached equals the word length
     words.forEach(word => {
         let startingNode = new Node(-1, 0);
         let depth = buildTree(word, startingNode, 0);
         // TODO: The startingNode is the fully formed node for the word
         // TODO: We can analyze the tree at this moment to yield all possible paths
-        let x = word.length;
         if (depth === word.length & word.length !== 0) {
-            foundWords.push(word.toLowerCase())
-            // TODO: We can sort the words into bucks at this point
-            // TODO: Words that start with, words that end with
+            // Starts with
+            if (!result.startsWith.hasOwnProperty(word[0])) {
+                result.startsWith[word[0]] = [];
+            }
+            result.startsWith[word[0]].push(word);
+            // Ends with
+            if (!result.endsWith.hasOwnProperty(word[word.length - 1])) {
+                result.endsWith[word[word.length - 1]] = [];
+            }
+            result.endsWith[word[word.length - 1]].push(word);
+            // Rating
+            let wordRating = rateWord(word);
+            if (!result.rating.hasOwnProperty(wordRating)) {
+                result.rating[wordRating] = [];
+            }
+            result.rating[wordRating].push(word);
+            // All words
+            result.allWords[word] = wordRating;
         }
     });
-    return foundWords;
+    return result;
 }
 
 const azFilename = 'az.txt';
 const oxfordFilename = 'oxford_top3000.txt';
 const azWords = readFile(azFilename);
 const oxfordWords = readFile(oxfordFilename);
-let azFoundWords = findWords(azWords)
-let oxfordFoundWords = findWords(oxfordWords)
+let azResult = findWords(azWords).allWords;
+let oxfordResults = findWords(oxfordWords).allWords;
 
-console.dir(azFoundWords, { 'maxArrayLength': null });
-console.dir(oxfordFoundWords, { 'maxArrayLength': null });
+console.dir(Object.keys(azResult), { 'maxArrayLength': null });
+console.dir(Object.keys(oxfordResults), { 'maxArrayLength': null });
