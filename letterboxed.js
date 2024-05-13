@@ -1,6 +1,12 @@
 import puzzle from './puzzle.js'
-import { readOxfordFile, readAZFile } from './util.js'
+import { readFile } from './util.js'
 
+/**
+ * Represents a location on the puzzle and the location with a word. The id
+ * represents the location within the puzzle and the depth represents how far
+ * into the word the letter is. The children array contains the nodes of all
+ * child letters that follow the node in the course of spelling the word.
+ */
 class Node {
     constructor(id, depth) {
         this.id = id;
@@ -8,10 +14,6 @@ class Node {
         this.children = [];
     }
 }
-
-/**
-
- */
 
 /**
  * Determines if a letter combination is a valid move. Source and destination
@@ -25,11 +27,16 @@ class Node {
  * @returns 
  */
 function isValidMove(source, destination) {
+
+    // Validate input
     if (source < -1 || source > 11) return false;
     if (-1 < source > 11) return false;
     if (source === -1) return true;
+
+    // Identify which sides of the puzzle are being tested
     const sourceGroup = Math.floor(source / 3);
     const destinationGroup = Math.floor(destination / 3);
+
     return !(sourceGroup === destinationGroup);
 }
 
@@ -43,33 +50,23 @@ function isValidMove(source, destination) {
  * @param {string} word 
  * @param {Node} currentNode 
  * @param {number} depth 
- * @returns 
+ * @returns the max depth reached in the tree below this node
  */
 function buildTree(word, currentNode, depth) {
-
-    // Termination
-    if (depth >= word.length) {
-        // The currentNode holds the last letter of the word
-        return depth;
-    }
-
-    // Track all child trees
+    // The currentNode holds the last letter of the word
+    if (depth >= word.length) { return depth; }
+    // Track the depths child trees
     let maxChildDepth = depth;
-
     // Loop through puzzle and create nodes at this depth
     puzzle.forEach(letter => {
-
         // The puzzle character matches the current letter in the word and is a
         // valid connection according to the puzzle rules.
         if (letter.value === word[depth].toUpperCase() && isValidMove(currentNode.id, letter.id)) {
-
             // Create new node as child of currentNode
             let newNode = new Node(letter.id, depth);
             currentNode.children.push(newNode);
-
             // Recurse on the child node at an incremented depth
             let childDepth = buildTree(word, newNode, depth + 1);
-
             // Update maxChildDepth
             maxChildDepth = Math.max(maxChildDepth, childDepth);
         }
@@ -79,14 +76,29 @@ function buildTree(word, currentNode, depth) {
     return maxChildDepth;
 }
 
-
+/**
+ * Generates an array of words that can be spelled in the puzzle. A tree is built
+ * for each word but we only record whether the word can be spelled at least one
+ * way.
+ * 
+ * TODO: Record the puzzle id sequence for each way to spell the word so that we
+ * can
+ * @param {array} words 
+ * @returns an array of words that can be spelled in the puzzle
+ */
 function findWords(words) {
     let foundWords = [];
+    // Loop through each word and check if depth reached equals the word length
     words.forEach(word => {
         let startingNode = new Node(-1, 0);
         let depth = buildTree(word, startingNode, 0);
+        // TODO: The startingNode is the fully formed node for the word
+        // TODO: We can analyze the tree at this moment to yield all possible paths
+        let x = word.length;
         if (depth === word.length & word.length !== 0) {
             foundWords.push(word.toLowerCase())
+            // TODO: We can sort the words into bucks at this point
+            // TODO: Words that start with, words that end with
         }
     });
     return foundWords;
@@ -94,8 +106,8 @@ function findWords(words) {
 
 const azFilename = 'az.txt';
 const oxfordFilename = 'oxford_top3000.txt';
-const azWords = readAZFile(azFilename);
-const oxfordWords = readOxfordFile(oxfordFilename);
+const azWords = readFile(azFilename);
+const oxfordWords = readFile(oxfordFilename);
 let azFoundWords = findWords(azWords)
 let oxfordFoundWords = findWords(oxfordWords)
 

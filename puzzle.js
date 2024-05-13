@@ -1,3 +1,4 @@
+// Puzzle structure
 const puzzle = [
     { "id": 0, "value": 'B' },
     { "id": 1, "value": 'T' },
