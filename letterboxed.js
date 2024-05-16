@@ -145,11 +145,6 @@ function findWords(words) {
     return result;
 }
 
-// const azFilename = 'az.txt';
-// const azWords = readFile(azFilename);
-// let azResult = findWords(azWords);
-// console.dir(azResult, { 'maxArrayLength': null });
-
 const oxfordFilename = 'oxford_top3000.txt';
 const oxfordWords = readFile(oxfordFilename);
 let oxfordResults = findWords(oxfordWords);
@@ -162,8 +157,16 @@ for (let key in oxfordResults.rating) {
         maxRating = parseInt(key);
     }
 }
+
 let bestWords = oxfordResults.rating[maxRating];
 let bestWord = bestWords[0];
+bestWords.forEach(word => {
+    let firstLetter = word[0];
+    let availableLetters = removeLettersStart(word);
+    if (parseInt(key) > maxRating) {
+        maxRating = parseInt(key);
+    }
+});
 
 // get available letters
 // if available = 0, done
@@ -173,20 +176,56 @@ let bestWord = bestWords[0];
 // sort them by rating
 // select the highest rated word that removes at least 1 letter
 
-function recurse() {
+function recurse(word, results, availableLetters) {
+    if (availableLetters.length === 0) {
+        return 1;
+    }
+    let lastLetter = word[word.length - 1];
+    let candidateWords = results.startsWith[lastLetter];
+    if (candidateWords.length === 0) {
+        return 0;
+    }
+    candidateWords = sortCandidateWords(candidateWords);
+    candidateWords.forEach(word => {
+        if (wordUsesAvailableLetter(word, availableLetters)) {
+            let newAvailableWords = removeLetters(word, newAvailableWords);
+            return recurse(word, results, availableLetters);
+        }
 
+    })
+    return 0;
+}
+
+function wordUsesAvailableLetter(word, availableLetters) {
+    for (let letter = 0; letter < word.length; letter++) {
+        if (word.includes(letter)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function sortCandidateWords(candidateWords) {
+    //TODO: Complete this function
+    return candidateWords;
 }
 
 
-bestWords.forEach(word => {
-    let firstLetter = word[0];
-    let availableLetters = removeLetters(word);
-    if (parseInt(key) > maxRating) {
-        maxRating = parseInt(key);
-    }
-});
 
-function removeLetters(word) {
+
+function removeLetters(word, newAvailableWords) {
+    let remainingLetters = [];
+    newAvailableWords.forEach(letter => {
+        if (!word.toUpperCase().includes(letter)) {
+            if (!remainingLetters.includes(letter)) {
+                remainingLetters.push(letter);
+            }
+        }
+    });
+    return remainingLetters;
+}
+
+function removeLettersStart(word) {
     let remainingLetters = [];
     puzzle.forEach(letter => {
         if (!word.toUpperCase().includes(letter.value)) {
@@ -197,5 +236,3 @@ function removeLetters(word) {
     });
     return remainingLetters;
 }
-
-console.log(end);
