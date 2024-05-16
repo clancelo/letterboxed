@@ -145,12 +145,57 @@ function findWords(words) {
     return result;
 }
 
-const azFilename = 'az.txt';
-const oxfordFilename = 'oxford_top3000.txt';
-const azWords = readFile(azFilename);
-const oxfordWords = readFile(oxfordFilename);
-let azResult = findWords(azWords).allWords;
-let oxfordResults = findWords(oxfordWords).allWords;
+// const azFilename = 'az.txt';
+// const azWords = readFile(azFilename);
+// let azResult = findWords(azWords);
+// console.dir(azResult, { 'maxArrayLength': null });
 
-console.dir(Object.keys(azResult), { 'maxArrayLength': null });
-console.dir(Object.keys(oxfordResults), { 'maxArrayLength': null });
+const oxfordFilename = 'oxford_top3000.txt';
+const oxfordWords = readFile(oxfordFilename);
+let oxfordResults = findWords(oxfordWords);
+console.dir(oxfordResults, { 'maxArrayLength': null });
+
+let maxRating = 0;
+for (let key in oxfordResults.rating) {
+    let int = parseInt(key);
+    if (parseInt(key) > maxRating) {
+        maxRating = parseInt(key);
+    }
+}
+let bestWords = oxfordResults.rating[maxRating];
+let bestWord = bestWords[0];
+
+// get available letters
+// if available = 0, done
+// get last letter
+// get all words starting with the last letter
+// if no words remain, this word is wrong, go back and use second rated word
+// sort them by rating
+// select the highest rated word that removes at least 1 letter
+
+function recurse() {
+
+}
+
+
+bestWords.forEach(word => {
+    let firstLetter = word[0];
+    let availableLetters = removeLetters(word);
+    if (parseInt(key) > maxRating) {
+        maxRating = parseInt(key);
+    }
+});
+
+function removeLetters(word) {
+    let remainingLetters = [];
+    puzzle.forEach(letter => {
+        if (!word.toUpperCase().includes(letter.value)) {
+            if (!remainingLetters.includes(letter)) {
+                remainingLetters.push(letter);
+            }
+        }
+    });
+    return remainingLetters;
+}
+
+console.log(end);
