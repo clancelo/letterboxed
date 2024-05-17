@@ -145,7 +145,8 @@ function findWords(words) {
     return result;
 }
 
-const oxfordFilename = 'oxford_top3000.txt';
+const oxfordFilename = 'az.txt';
+// const oxfordFilename = 'oxford_top3000.txt';
 const oxfordWords = readFile(oxfordFilename);
 let oxfordResults = findWords(oxfordWords);
 console.dir(oxfordResults, { 'maxArrayLength': null });
@@ -159,14 +160,11 @@ for (let key in oxfordResults.rating) {
 }
 
 let bestWords = oxfordResults.rating[maxRating];
-let bestWord = bestWords[0];
-bestWords.forEach(word => {
-    let firstLetter = word[0];
-    let availableLetters = removeLettersStart(word);
-    if (parseInt(key) > maxRating) {
-        maxRating = parseInt(key);
-    }
-});
+let bestWord = bestWords[1];
+
+recurse(bestWord, oxfordResults, removeLetters(bestWord, puzzleToArray()));
+
+console.log(maxRating);
 
 // get available letters
 // if available = 0, done
@@ -175,6 +173,14 @@ bestWords.forEach(word => {
 // if no words remain, this word is wrong, go back and use second rated word
 // sort them by rating
 // select the highest rated word that removes at least 1 letter
+
+function puzzleToArray() {
+    let puzzleArray = [];
+    puzzle.forEach(letterObj => {
+        puzzleArray.push(letterObj.value);
+    });
+    return puzzleArray;
+}
 
 function recurse(word, results, availableLetters) {
     if (availableLetters.length === 0) {
@@ -188,10 +194,10 @@ function recurse(word, results, availableLetters) {
     candidateWords = sortCandidateWords(candidateWords);
     candidateWords.forEach(word => {
         if (wordUsesAvailableLetter(word, availableLetters)) {
-            let newAvailableWords = removeLetters(word, newAvailableWords);
+            let newAvailableLetters = removeLetters(word, newAvailableLetters);
             return recurse(word, results, availableLetters);
         }
-
+        let y = 0;
     })
     return 0;
 }
@@ -213,9 +219,9 @@ function sortCandidateWords(candidateWords) {
 
 
 
-function removeLetters(word, newAvailableWords) {
+function removeLetters(word, newAvailableLetters) {
     let remainingLetters = [];
-    newAvailableWords.forEach(letter => {
+    newAvailableLetters.forEach(letter => {
         if (!word.toUpperCase().includes(letter)) {
             if (!remainingLetters.includes(letter)) {
                 remainingLetters.push(letter);
