@@ -1,17 +1,17 @@
 // Puzzle structure
 const puzzle = [
-    { "id": 0, "value": 'B' },
-    { "id": 1, "value": 'T' },
-    { "id": 2, "value": 'W' },
-    { "id": 3, "value": 'E' },
-    { "id": 4, "value": 'R' },
-    { "id": 5, "value": 'H' },
-    { "id": 6, "value": 'S' },
-    { "id": 7, "value": 'P' },
-    { "id": 8, "value": 'K' },
-    { "id": 9, "value": 'O' },
-    { "id": 10, "value": 'M' },
-    { "id": 11, "value": 'U' }
+    { "id": 0, "value": 'T' },
+    { "id": 1, "value": 'E' },
+    { "id": 2, "value": 'D' },
+    { "id": 3, "value": 'I' },
+    { "id": 4, "value": 'L' },
+    { "id": 5, "value": 'R' },
+    { "id": 6, "value": 'V' },
+    { "id": 7, "value": 'N' },
+    { "id": 8, "value": 'C' },
+    { "id": 9, "value": 'S' },
+    { "id": 10, "value": 'O' },
+    { "id": 11, "value": 'K' }
 ]
 
 export default puzzle;

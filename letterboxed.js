@@ -145,37 +145,6 @@ function findWords(words) {
     return result;
 }
 
-const oxfordFilename = 'az.txt';
-// const oxfordFilename = 'oxford_top3000.txt';
-const oxfordWords = readFile(oxfordFilename);
-let oxfordResults = findWords(oxfordWords);
-//console.dir(oxfordResults, { 'maxArrayLength': null });
-
-let maxRating = 0;
-for (let key in oxfordResults.rating) {
-    let int = parseInt(key);
-    if (parseInt(key) > maxRating) {
-        maxRating = parseInt(key);
-    }
-}
-
-let bestWords = oxfordResults.rating[maxRating];
-let bestWord = bestWords[0];
-let series = [];
-series.push(bestWord);
-
-let result = recurse(bestWord, oxfordResults, removeLetters(bestWord, puzzleToArray()));
-
-console.log(series);
-
-// get available letters
-// if available = 0, done
-// get last letter
-// get all words starting with the last letter
-// if no words remain, this word is wrong, go back and use second rated word
-// sort them by rating
-// select the highest rated word that removes at least 1 letter
-
 function puzzleToArray() {
     let puzzleArray = [];
     puzzle.forEach(letterObj => {
@@ -189,7 +158,7 @@ function recurse(word, results, availableLetters) {
         return true;
     }
     let lastLetter = word[word.length - 1];
-    let candidateWords = results.startsWith[lastLetter];
+    let candidateWords = results.startsWith[lastLetter] || [];
     if (candidateWords.length === 0) {
         return false;
     }
@@ -249,3 +218,46 @@ function removeLettersStart(word) {
     });
     return remainingLetters;
 }
+
+function findSeries(words, results, availableLetters) {
+
+    for (let i = 0; i < words.length; i++) {
+        let candidateWord = words[i];
+        series.push(candidateWord);
+        let newAvailableLetters = removeLetters(candidateWord, availableLetters);
+        if (recurse(candidateWord, results, newAvailableLetters)) {
+            return true;
+        }
+        series.pop();
+    }
+
+}
+
+
+const oxfordFilename = 'oxford_top3000.txt';
+// const oxfordFilename = 'oxford_top3000.txt';
+const oxfordWords = readFile(oxfordFilename);
+let oxfordResults = findWords(oxfordWords);
+//console.dir(oxfordResults, { 'maxArrayLength': null });
+
+let maxRating = 0;
+for (let key in oxfordResults.rating) {
+    let int = parseInt(key);
+    if (parseInt(key) > maxRating) {
+        maxRating = parseInt(key);
+    }
+}
+
+let bestWords = oxfordResults.rating[maxRating];
+let bestWord = bestWords[0];
+let series = [];
+let result = findSeries(Object.keys(oxfordResults.allWords), oxfordResults, puzzleToArray());
+// series.push(bestWord);
+
+
+
+// let result = recurse(bestWord, oxfordResults, removeLetters(bestWord, puzzleToArray()));
+
+
+console.log(result);
+console.log(series);
