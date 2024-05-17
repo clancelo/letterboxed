@@ -149,7 +149,7 @@ const oxfordFilename = 'az.txt';
 // const oxfordFilename = 'oxford_top3000.txt';
 const oxfordWords = readFile(oxfordFilename);
 let oxfordResults = findWords(oxfordWords);
-console.dir(oxfordResults, { 'maxArrayLength': null });
+//console.dir(oxfordResults, { 'maxArrayLength': null });
 
 let maxRating = 0;
 for (let key in oxfordResults.rating) {
@@ -160,11 +160,13 @@ for (let key in oxfordResults.rating) {
 }
 
 let bestWords = oxfordResults.rating[maxRating];
-let bestWord = bestWords[1];
+let bestWord = bestWords[0];
+let series = [];
+series.push(bestWord);
 
-recurse(bestWord, oxfordResults, removeLetters(bestWord, puzzleToArray()));
+let result = recurse(bestWord, oxfordResults, removeLetters(bestWord, puzzleToArray()));
 
-console.log(maxRating);
+console.log(series);
 
 // get available letters
 // if available = 0, done
@@ -184,31 +186,36 @@ function puzzleToArray() {
 
 function recurse(word, results, availableLetters) {
     if (availableLetters.length === 0) {
-        return 1;
+        return true;
     }
     let lastLetter = word[word.length - 1];
     let candidateWords = results.startsWith[lastLetter];
     if (candidateWords.length === 0) {
-        return 0;
+        return false;
     }
     candidateWords = sortCandidateWords(candidateWords);
-    candidateWords.forEach(word => {
-        if (wordUsesAvailableLetter(word, availableLetters)) {
-            let newAvailableLetters = removeLetters(word, newAvailableLetters);
-            return recurse(word, results, availableLetters);
+    for (let c = 0; c < candidateWords.length; c++) {
+        let candidateWord = candidateWords[c];
+        if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
+            series.push(candidateWord);
+            let newAvailableLetters = removeLetters(candidateWord, availableLetters);
+            if (recurse(candidateWord, results, newAvailableLetters)) {
+                return true;
+            }
+            series.pop();
         }
-        let y = 0;
-    })
-    return 0;
+    }
+    return false;
 }
 
 function wordUsesAvailableLetter(word, availableLetters) {
     for (let letter = 0; letter < word.length; letter++) {
-        if (word.includes(letter)) {
+        if (availableLetters.some(item => item.toLowerCase() === word[letter].toLowerCase())) {
             return true;
         }
     }
     return false;
+
 }
 
 function sortCandidateWords(candidateWords) {
@@ -219,16 +226,16 @@ function sortCandidateWords(candidateWords) {
 
 
 
-function removeLetters(word, newAvailableLetters) {
-    let remainingLetters = [];
-    newAvailableLetters.forEach(letter => {
+function removeLetters(word, availableLetters) {
+    let newAvailableLetters = [];
+    availableLetters.forEach(letter => {
         if (!word.toUpperCase().includes(letter)) {
-            if (!remainingLetters.includes(letter)) {
-                remainingLetters.push(letter);
+            if (!newAvailableLetters.includes(letter)) {
+                newAvailableLetters.push(letter);
             }
         }
     });
-    return remainingLetters;
+    return newAvailableLetters;
 }
 
 function removeLettersStart(word) {
