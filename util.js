@@ -13,7 +13,7 @@ function writeArrayToFile(array, filePath) {
 }
 
 function solutionToText(solution) {
-    return solution.wordCount + ", " + solution.characterCount + ", " + solution.solution;
+    return solution.rating + ", " + solution.wordCount + ", " + solution.characterCount + ", " + solution.solution;
 }
 
 /**

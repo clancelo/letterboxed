@@ -17,5 +17,5 @@ console.log(111)
 //     // console.log(result.allSolutions[i].characterCount)
 //     // console.log(result.allSolutions[i].solution)
 // }
-writeSolutionsToFile(result.allSolutions, './test.txt');
+writeSolutionsToFile(result.allSolutions, './test2.txt');
 //console.log(series);

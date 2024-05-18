@@ -22,6 +22,10 @@ class SolutionSet {
         this.currentSolution = [];
         this.allSolutions = [];
     }
+    add(solution) {
+        this.allSolutions.push(solution);
+        this.allSolutions.sort((solutionA, solutionB) => solutionA.rating - solutionB.rating)
+    }
 }
 
 class Solution {
@@ -29,6 +33,7 @@ class Solution {
         this.solution = solution;
         this.wordCount = wordCount;
         this.characterCount = characterCount;
+        this.rating = wordCount * characterCount;
     }
 }
 
@@ -160,6 +165,9 @@ function puzzleToArray() {
 }
 
 function recurse(word, results, solutionSet, availableLetters) {
+    if (series.length > 5) {
+        return false;
+    }
     if (availableLetters.length === 0) {
         return true;
     }
@@ -175,11 +183,11 @@ function recurse(word, results, solutionSet, availableLetters) {
             series.push(candidateWord);
             let newAvailableLetters = removeLetters(candidateWord, availableLetters);
             if (recurse(candidateWord, results, solutionSet, newAvailableLetters)) {
-                if (word === series[0]) {
-                    let solution = new Solution(series, series.length, countCharacters(series));
-                    solutionSet.allSolutions.push(solution);
+                if (newAvailableLetters.length === 0) {
+                    let solution = new Solution(series.slice(), series.length, countCharacters(series));
+                    solutionSet.add(solution);
                 }
-                return true;
+                //return true;
             }
             series.pop();
         }
@@ -234,13 +242,7 @@ function findSolutions(wordSet) {
         let candidateWord = words[i];
         series.push(candidateWord);
         let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-        if (recurse(candidateWord, wordSet, solutionSet, newAvailableLetters)) {
-            //let solution = new Solution(series, series.length, countCharacters(series));
-            //solutionSet.allSolutions.push(solution);
-            //return solutionSet;
-            series = [];
-            continue;
-        }
+        recurse(candidateWord, wordSet, solutionSet, newAvailableLetters);
         series.pop();
     }
     return solutionSet;
