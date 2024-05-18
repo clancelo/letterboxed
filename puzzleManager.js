@@ -159,7 +159,7 @@ function puzzleToArray() {
     return puzzleArray;
 }
 
-function recurse(word, results, availableLetters) {
+function recurse(word, results, solutionSet, availableLetters) {
     if (availableLetters.length === 0) {
         return true;
     }
@@ -174,7 +174,11 @@ function recurse(word, results, availableLetters) {
         if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
             series.push(candidateWord);
             let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-            if (recurse(candidateWord, results, newAvailableLetters)) {
+            if (recurse(candidateWord, results, solutionSet, newAvailableLetters)) {
+                if (word === series[0]) {
+                    let solution = new Solution(series, series.length, countCharacters(series));
+                    solutionSet.allSolutions.push(solution);
+                }
                 return true;
             }
             series.pop();
@@ -230,11 +234,12 @@ function findSolutions(wordSet) {
         let candidateWord = words[i];
         series.push(candidateWord);
         let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-        if (recurse(candidateWord, wordSet, newAvailableLetters)) {
-            let solution = new Solution(series, series.length, countCharacters(series));
-            solutionSet.allSolutions.push(solution);
+        if (recurse(candidateWord, wordSet, solutionSet, newAvailableLetters)) {
+            //let solution = new Solution(series, series.length, countCharacters(series));
+            //solutionSet.allSolutions.push(solution);
             //return solutionSet;
             series = [];
+            continue;
         }
         series.pop();
     }

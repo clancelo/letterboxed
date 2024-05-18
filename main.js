@@ -11,11 +11,11 @@ let wordSet = findValidWords(allWords);
 let result = findSolutions(wordSet);
 console.log(111)
 //console.dir(result, { 'maxArrayLength': null });
-for (let i = 0; i < result.allSolutions.length; i++) {
-    // console.dir(result.allSolutions[i].solution, { 'maxArrayLength': null });
-    //console.log(result.allSolutions[i].wordCount + ", " + result.allSolutions[i].characterCount + ", " + result.allSolutions[i].solution)
-    // console.log(result.allSolutions[i].characterCount)
-    // console.log(result.allSolutions[i].solution)
-}
+// for (let i = 0; i < result.allSolutions.length; i++) {
+//     // console.dir(result.allSolutions[i].solution, { 'maxArrayLength': null });
+//     //console.log(result.allSolutions[i].wordCount + ", " + result.allSolutions[i].characterCount + ", " + result.allSolutions[i].solution)
+//     // console.log(result.allSolutions[i].characterCount)
+//     // console.log(result.allSolutions[i].solution)
+// }
 writeSolutionsToFile(result.allSolutions, './test.txt');
 //console.log(series);
