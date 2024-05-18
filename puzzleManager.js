@@ -1,12 +1,5 @@
 import puzzle from './puzzle.js'
-import { readFile } from './util.js'
 
-/**
- * Represents a location on the puzzle and the location with a word. The id
- * represents the location within the puzzle and the depth represents how far
- * into the word the letter is. The children array contains the nodes of all
- * child letters that follow the node in the course of spelling the word.
- */
 class Node {
     constructor(id, depth) {
         this.id = id;
@@ -23,6 +16,10 @@ class Result {
         this.rating = {};
     }
 }
+
+
+let series = [];
+let DICTIONARY_FILENAME = 'oxford_top3000.txt';
 
 /**
  * Determines if a letter combination is a valid move. Source and destination
@@ -105,7 +102,7 @@ function rateWord(word) {
  * @param {array} words 
  * @returns an array of words that can be spelled in the puzzle
  */
-function findWords(words) {
+function findValidWords(words) {
     let result = new Result();
     // Loop through each word and check if depth reached equals the word length
     words.forEach(word => {
@@ -184,9 +181,6 @@ function sortCandidateWords(candidateWords) {
     return candidateWords;
 }
 
-
-
-
 function removeLetters(word, availableLetters) {
     let newAvailableLetters = [];
     availableLetters.forEach(letter => {
@@ -199,19 +193,20 @@ function removeLetters(word, availableLetters) {
     return newAvailableLetters;
 }
 
-function removeLettersStart(word) {
-    let remainingLetters = [];
-    puzzle.forEach(letter => {
-        if (!word.toUpperCase().includes(letter.value)) {
-            if (!remainingLetters.includes(letter)) {
-                remainingLetters.push(letter);
-            }
+function getMaxRating(resultSet) {
+    let maxRating = 0;
+    for (let key in resultSet.rating) {
+        const rating = parseInt(key);
+        if (rating > maxRating) {
+            maxRating = rating;
         }
-    });
-    return remainingLetters;
+    }
+    return maxRating;
 }
 
-function findSeries(words, results, availableLetters) {
+function findSolutions(results) {
+    let words = Object.keys(results.allWords);
+    let availableLetters = puzzleToArray();
 
     for (let i = 0; i < words.length; i++) {
         let candidateWord = words[i];
@@ -222,34 +217,9 @@ function findSeries(words, results, availableLetters) {
         }
         series.pop();
     }
-
+    return false;
 }
 
-
-const oxfordFilename = 'oxford_top3000.txt';
-// const oxfordFilename = 'oxford_top3000.txt';
-const oxfordWords = readFile(oxfordFilename);
-let oxfordResults = findWords(oxfordWords);
-//console.dir(oxfordResults, { 'maxArrayLength': null });
-
-let maxRating = 0;
-for (let key in oxfordResults.rating) {
-    let int = parseInt(key);
-    if (parseInt(key) > maxRating) {
-        maxRating = parseInt(key);
-    }
-}
-
-let bestWords = oxfordResults.rating[maxRating];
-let bestWord = bestWords[0];
-let series = [];
-let result = findSeries(Object.keys(oxfordResults.allWords), oxfordResults, puzzleToArray());
-// series.push(bestWord);
-
-
-
-// let result = recurse(bestWord, oxfordResults, removeLetters(bestWord, puzzleToArray()));
-
-
-console.log(result);
-console.log(series);
+export {
+    DICTIONARY_FILENAME, findValidWords, puzzleToArray, findSolutions, series
+};
