@@ -8,7 +8,7 @@ class Node {
     }
 }
 
-class Result {
+class WordSet {
     constructor() {
         this.allWords = {};
         this.startsWith = {};
@@ -17,6 +17,20 @@ class Result {
     }
 }
 
+class SolutionSet {
+    constructor() {
+        this.currentSolution = [];
+        this.allSolutions = [];
+    }
+}
+
+class Solution {
+    constructor() {
+        this.solution = [];
+        this.wordCount = 0;
+        this.characterCount = 0;
+    }
+}
 
 let series = [];
 let DICTIONARY_FILENAME = 'oxford_top3000.txt';
@@ -97,41 +111,44 @@ function rateWord(word) {
  * for each word but we only record whether the word can be spelled at least one
  * way.
  * 
- * TODO: Record the puzzle id sequence for each way to spell the word so that we
- * can
+ * TODO: Record the puzzle id sequence for each way to spell the word 
+ * 
  * @param {array} words 
  * @returns an array of words that can be spelled in the puzzle
  */
 function findValidWords(words) {
-    let result = new Result();
+    let wordSet = new WordSet();
     // Loop through each word and check if depth reached equals the word length
     words.forEach(word => {
+        if (word.length <= 2) {
+            return;
+        }
         let startingNode = new Node(-1, 0);
         let depth = buildTree(word, startingNode, 0);
         // TODO: The startingNode is the fully formed node for the word
         // TODO: We can analyze the tree at this moment to yield all possible paths
         if (depth === word.length & word.length !== 0) {
             // Starts with
-            if (!result.startsWith.hasOwnProperty(word[0])) {
-                result.startsWith[word[0]] = [];
+            if (!wordSet.startsWith.hasOwnProperty(word[0])) {
+                wordSet.startsWith[word[0]] = [];
             }
-            result.startsWith[word[0]].push(word);
+            wordSet.startsWith[word[0]].push(word);
             // Ends with
-            if (!result.endsWith.hasOwnProperty(word[word.length - 1])) {
-                result.endsWith[word[word.length - 1]] = [];
+            if (!wordSet.endsWith.hasOwnProperty(word[word.length - 1])) {
+                wordSet.endsWith[word[word.length - 1]] = [];
             }
-            result.endsWith[word[word.length - 1]].push(word);
+            wordSet.endsWith[word[word.length - 1]].push(word);
             // Rating
             let wordRating = rateWord(word);
-            if (!result.rating.hasOwnProperty(wordRating)) {
-                result.rating[wordRating] = [];
+            if (!wordSet.rating.hasOwnProperty(wordRating)) {
+                wordSet.rating[wordRating] = [];
             }
-            result.rating[wordRating].push(word);
+            wordSet.rating[wordRating].push(word);
             // All words
-            result.allWords[word] = wordRating;
+            wordSet.allWords[word] = wordRating;
         }
     });
-    return result;
+    return wordSet;
 }
 
 function puzzleToArray() {
@@ -204,20 +221,25 @@ function getMaxRating(resultSet) {
     return maxRating;
 }
 
-function findSolutions(results) {
-    let words = Object.keys(results.allWords);
+function findSolutions(wordSet) {
+    let words = Object.keys(wordSet.allWords);
     let availableLetters = puzzleToArray();
+    let solutionSet = new SolutionSet();
 
     for (let i = 0; i < words.length; i++) {
         let candidateWord = words[i];
         series.push(candidateWord);
         let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-        if (recurse(candidateWord, results, newAvailableLetters)) {
-            return true;
+        if (recurse(candidateWord, wordSet, newAvailableLetters)) {
+            solutionSet.currentSolution = series;
+            solutionSet.wordCount = series.length;
+            // solutionSet.characterCount = countCharacters(series);
+            solutionSet.characterCount = 48;
+            return solutionSet;
         }
         series.pop();
     }
-    return false;
+    return solutionSet;
 }
 
 export {
