@@ -25,10 +25,10 @@ class SolutionSet {
 }
 
 class Solution {
-    constructor() {
-        this.solution = [];
-        this.wordCount = 0;
-        this.characterCount = 0;
+    constructor(solution, wordCount, characterCount) {
+        this.solution = solution;
+        this.wordCount = wordCount;
+        this.characterCount = characterCount;
     }
 }
 
@@ -231,15 +231,22 @@ function findSolutions(wordSet) {
         series.push(candidateWord);
         let newAvailableLetters = removeLetters(candidateWord, availableLetters);
         if (recurse(candidateWord, wordSet, newAvailableLetters)) {
-            solutionSet.currentSolution = series;
-            solutionSet.wordCount = series.length;
-            // solutionSet.characterCount = countCharacters(series);
-            solutionSet.characterCount = 48;
-            return solutionSet;
+            let solution = new Solution(series, series.length, countCharacters(series));
+            solutionSet.allSolutions.push(solution);
+            //return solutionSet;
+            series = [];
         }
         series.pop();
     }
     return solutionSet;
+}
+
+function countCharacters(series) {
+    let count = 0;
+    for (let word = 0; word < series.length; word++) {
+        count += series[word].length;
+    }
+    return count;
 }
 
 export {

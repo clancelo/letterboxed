@@ -10,5 +10,11 @@ let wordSet = findValidWords(allWords);
 // Generate a result set containing solutions to the puzzle
 let result = findSolutions(wordSet);
 
-console.log(result);
+console.dir(result, { 'maxArrayLength': null });
+for (let i = 0; i < result.allSolutions.length; i++) {
+    // console.dir(result.allSolutions[i].solution, { 'maxArrayLength': null });
+    console.log(result.allSolutions[i].wordCount + ", " + result.allSolutions[i].characterCount + ", " + result.allSolutions[i].solution)
+    // console.log(result.allSolutions[i].characterCount)
+    // console.log(result.allSolutions[i].solution)
+}
 console.log(series);
