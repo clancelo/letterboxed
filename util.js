@@ -12,6 +12,23 @@ function writeArrayToFile(array, filePath) {
     fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
 }
 
+function solutionToText(solution) {
+    return solution.wordCount + ", " + solution.characterCount + ", " + solution.solution;
+}
+
+/**
+ * Writes an array to a specific filename.
+ * @param {array} array 
+ * @param {string} filePath 
+ */
+function writeSolutionsToFile(array, filePath) {
+    const stringArray = array.map(item =>
+        solutionToText(item)
+    );
+    const content = stringArray.join('\n');
+    fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
+}
+
 /**
  * Reads a file of words and returns an array of the words in the file.
  * @param {string} filename 
@@ -31,4 +48,4 @@ function readFile(filename) {
     }
 }
 
-export { writeArrayToFile, readFile };
+export { writeSolutionsToFile, readFile };

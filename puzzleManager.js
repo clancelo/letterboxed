@@ -33,7 +33,7 @@ class Solution {
 }
 
 let series = [];
-let DICTIONARY_FILENAME = 'oxford_top3000.txt';
+let DICTIONARY_FILENAME = 'oxford.txt';
 
 /**
  * Determines if a letter combination is a valid move. Source and destination
