@@ -20,6 +20,9 @@ class WordSet {
         this.endsWith = {};
         this.rating = {};
     }
+    getWords() {
+        return Object.keys(this.allWords);
+    }
 }
 
 class SolutionSet {
@@ -74,28 +77,38 @@ function isValidMove(source, destination) {
  * max depth reached is returned. If the returned value is equal to the length
  * of the word, the word CAN be spelled within the specific puzzle.
  * 
+ *  // CLEAN UP
+ * 
  * @param {string} word 
  * @param {Node} currentNode 
  * @param {number} depth 
  * @returns the max depth reached in the tree below this node
  */
-function buildTree(word, currentNode, depth) {
+function buildWordSequence(word, currentNode, depth) {
+
     // The currentNode holds the last letter of the word
     if (depth >= word.length) { return depth; }
+
     // Track the depths child trees
     let maxChildDepth = depth;
+
     // Loop through puzzle and create nodes at this depth
     puzzle.forEach(letter => {
+
         // The puzzle character matches the current letter in the word and is a
         // valid connection according to the puzzle rules.
-        if (letter.value === word[depth].toUpperCase() && isValidMove(currentNode.id, letter.id)) {
+        if (letter.value === word[depth] && isValidMove(currentNode.id, letter.id)) {
+
             // Create new node as child of currentNode
-            let newNode = new Node(letter.id, depth);
-            currentNode.children.push(newNode);
+            let newLetterNode = new Node(letter.id, depth);
+            currentNode.children.push(newLetterNode);
+
             // Recurse on the child node at an incremented depth
-            let childDepth = buildTree(word, newNode, depth + 1);
+            let childDepth = buildWordSequence(word, newLetterNode, depth + 1);
+
             // Update maxChildDepth
             maxChildDepth = Math.max(maxChildDepth, childDepth);
+
         }
     });
 
@@ -113,6 +126,27 @@ function rateWord(word) {
     return uniqueLetters.size;
 }
 
+
+function addValidWord(validWords, word) {
+
+    // Populate startsWith
+    const firstLetter = word[0];
+    validWords.startsWith[firstLetter] = validWords.startsWith[firstLetter] ?? [];
+    validWords.startsWith[firstLetter].push(word);
+
+    // Populate endsWith
+    const lastLetter = word[word.length - 1];
+    validWords.endsWith[lastLetter] = validWords.endsWith[lastLetter] ?? [];
+    validWords.endsWith[lastLetter].push(word);
+
+    // Populate rating and allWords
+    const wordRating = rateWord(word);
+    validWords.rating[wordRating] = validWords.rating[wordRating] ?? [];
+    validWords.rating[wordRating].push(word);
+    validWords.allWords[word] = wordRating;
+
+}
+
 /**
  * Generates an array of words that can be spelled in the puzzle. A tree is built
  * for each word but we only record whether the word can be spelled at least one
@@ -123,45 +157,23 @@ function rateWord(word) {
  * @param {array} words 
  * @returns an array of words that can be spelled in the puzzle
  */
-function findValidWords(words) {
-    let wordSet = new WordSet();
-    // Loop through each word and check if depth reached equals the word length
-    words.forEach(word => {
-        if (word.length <= 2) {
-            return;
-        }
+function findValidWords(allWords) {
+    const startingDepth = 0;
+    let validWords = new WordSet();
+    allWords.forEach(word => {
         let startingNode = new Node(-1, 0);
-        let depth = buildTree(word, startingNode, 0);
-        // TODO: The startingNode is the fully formed node for the word
-        // TODO: We can analyze the tree at this moment to yield all possible paths
-        if (depth === word.length & word.length !== 0) {
-            // Starts with
-            if (!wordSet.startsWith.hasOwnProperty(word[0])) {
-                wordSet.startsWith[word[0]] = [];
-            }
-            wordSet.startsWith[word[0]].push(word);
-            // Ends with
-            if (!wordSet.endsWith.hasOwnProperty(word[word.length - 1])) {
-                wordSet.endsWith[word[word.length - 1]] = [];
-            }
-            wordSet.endsWith[word[word.length - 1]].push(word);
-            // Rating
-            let wordRating = rateWord(word);
-            if (!wordSet.rating.hasOwnProperty(wordRating)) {
-                wordSet.rating[wordRating] = [];
-            }
-            wordSet.rating[wordRating].push(word);
-            // All words
-            wordSet.allWords[word] = wordRating;
+        let wordDepth = buildWordSequence(word, startingNode, startingDepth);
+        if (wordDepth === word.length) {
+            addValidWord(validWords, word);
         }
     });
-    return wordSet;
+    return validWords;
 }
 
 function puzzleToArray() {
     let puzzleArray = [];
-    puzzle.forEach(letterObj => {
-        puzzleArray.push(letterObj.value);
+    puzzle.forEach(letter => {
+        puzzleArray.push(letter.value);
     });
     return puzzleArray;
 }
@@ -184,7 +196,7 @@ function sortCandidateWords(candidateWords) {
 function removeLetters(word, availableLetters) {
     let newAvailableLetters = [];
     availableLetters.forEach(letter => {
-        if (!word.toUpperCase().includes(letter)) {
+        if (!word.includes(letter)) {
             if (!newAvailableLetters.includes(letter)) {
                 newAvailableLetters.push(letter);
             }
@@ -193,7 +205,7 @@ function removeLetters(word, availableLetters) {
     return newAvailableLetters;
 }
 
-function recurse(word, results, solutionSet, availableLetters) {
+function solveWord(word, results, solutionSet, availableLetters) {
     if (series.length > 5) {
         return false;
     }
@@ -211,7 +223,7 @@ function recurse(word, results, solutionSet, availableLetters) {
         if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
             series.push(candidateWord);
             let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-            if (recurse(candidateWord, results, solutionSet, newAvailableLetters)) {
+            if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
                 if (newAvailableLetters.length === 0) {
                     let solution = new Solution(series.slice(), series.length, countCharacters(series));
                     solutionSet.add(solution);
@@ -225,16 +237,15 @@ function recurse(word, results, solutionSet, availableLetters) {
     return false;
 }
 
-function findSolutions(wordSet) {
-    let words = Object.keys(wordSet.allWords);
-    let availableLetters = puzzleToArray();
+function findSolutions(validWordSet) {
+    let words = validWordSet.getWords();
+    let remainingLetters = puzzleToArray();
     let solutionSet = new SolutionSet();
-
     for (let i = 0; i < words.length; i++) {
         let candidateWord = words[i];
         series.push(candidateWord);
-        let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-        recurse(candidateWord, wordSet, solutionSet, newAvailableLetters);
+        let newRemainingLetters = removeLetters(candidateWord, remainingLetters);
+        solveWord(candidateWord, validWordSet, solutionSet, newRemainingLetters);
         series.pop();
     }
     return solutionSet;

@@ -39,7 +39,7 @@ function readFile(filename) {
         const data = fs.readFileSync(filename, 'utf8');
         const rawWordArray = data.split('\n').filter(word => word.trim() !== '');
         const cleanedWordArray = rawWordArray.map(function (word) {
-            return word.trimEnd("\r");
+            return word.trimEnd("\r").toUpperCase();
         });
         return cleanedWordArray;
     } catch (err) {
@@ -58,7 +58,7 @@ function readFileLimited(filename, minLength, maxLength) {
         const data = fs.readFileSync(filename, 'utf8');
         const rawWordArray = data.split('\n').filter(word => word.trim() !== '');
         const cleanedWordArray = rawWordArray.map(function (word) {
-            return word.trimEnd("\r");
+            return word.trimEnd("\r").toUpperCase();
         });
         const finalArray1 = cleanedWordArray.filter(word => word.length <= maxLength);
         const finalArray2 = finalArray1.filter(word => word.length >= minLength);
