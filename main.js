@@ -1,21 +1,14 @@
-import { readFile, writeSolutionsToFile } from './util.js'
-import { DICTIONARY_FILENAME, findValidWords, findSolutions, series } from './puzzleManager.js'
+import { readFileLimited, writeSolutionsToFile } from './fileManager.js'
+import { DICTIONARY_OXFORD, SOLUTION_OUTPUT, findValidWords, findSolutions } from './puzzleManager.js'
 
-// Read in dictionary file
-let allWords = readFile(DICTIONARY_FILENAME);
+// Read dictionary file for words between 3 and 8 characters
+let allWords = readFileLimited(DICTIONARY_OXFORD, 3, 8);
 
 // Generate valid words that can be spelled in the puzzle
-let wordSet = findValidWords(allWords);
+let validWords = findValidWords(allWords);
 
 // Generate a result set containing solutions to the puzzle
-let result = findSolutions(wordSet);
-console.log(111)
-//console.dir(result, { 'maxArrayLength': null });
-// for (let i = 0; i < result.allSolutions.length; i++) {
-//     // console.dir(result.allSolutions[i].solution, { 'maxArrayLength': null });
-//     //console.log(result.allSolutions[i].wordCount + ", " + result.allSolutions[i].characterCount + ", " + result.allSolutions[i].solution)
-//     // console.log(result.allSolutions[i].characterCount)
-//     // console.log(result.allSolutions[i].solution)
-// }
-writeSolutionsToFile(result.allSolutions, './test2.txt');
-//console.log(series);
+let solutionSet = findSolutions(validWords);
+
+// Write solutions to file
+writeSolutionsToFile(solutionSet.allSolutions, SOLUTION_OUTPUT);

@@ -1,5 +1,10 @@
 import puzzle from './puzzle.js'
 
+let series = [];
+let DICTIONARY_OXFORD = './dictionaries/oxford.txt';
+let DICTIONARY_AZ = './dictionaries/az.txt';
+let SOLUTION_OUTPUT = './solutions/solutionSet.txt';
+
 class Node {
     constructor(id, depth) {
         this.id = id;
@@ -36,9 +41,6 @@ class Solution {
         this.rating = wordCount * characterCount;
     }
 }
-
-let series = [];
-let DICTIONARY_FILENAME = 'oxford.txt';
 
 /**
  * Determines if a letter combination is a valid move. Source and destination
@@ -164,37 +166,6 @@ function puzzleToArray() {
     return puzzleArray;
 }
 
-function recurse(word, results, solutionSet, availableLetters) {
-    if (series.length > 5) {
-        return false;
-    }
-    if (availableLetters.length === 0) {
-        return true;
-    }
-    let lastLetter = word[word.length - 1];
-    let candidateWords = results.startsWith[lastLetter] || [];
-    if (candidateWords.length === 0) {
-        return false;
-    }
-    candidateWords = sortCandidateWords(candidateWords);
-    for (let c = 0; c < candidateWords.length; c++) {
-        let candidateWord = candidateWords[c];
-        if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
-            series.push(candidateWord);
-            let newAvailableLetters = removeLetters(candidateWord, availableLetters);
-            if (recurse(candidateWord, results, solutionSet, newAvailableLetters)) {
-                if (newAvailableLetters.length === 0) {
-                    let solution = new Solution(series.slice(), series.length, countCharacters(series));
-                    solutionSet.add(solution);
-                }
-                //return true;
-            }
-            series.pop();
-        }
-    }
-    return false;
-}
-
 function wordUsesAvailableLetter(word, availableLetters) {
     for (let letter = 0; letter < word.length; letter++) {
         if (availableLetters.some(item => item.toLowerCase() === word[letter].toLowerCase())) {
@@ -222,15 +193,36 @@ function removeLetters(word, availableLetters) {
     return newAvailableLetters;
 }
 
-function getMaxRating(resultSet) {
-    let maxRating = 0;
-    for (let key in resultSet.rating) {
-        const rating = parseInt(key);
-        if (rating > maxRating) {
-            maxRating = rating;
+function recurse(word, results, solutionSet, availableLetters) {
+    if (series.length > 5) {
+        return false;
+    }
+    if (availableLetters.length === 0) {
+        return true;
+    }
+    let lastLetter = word[word.length - 1];
+    let candidateWords = results.startsWith[lastLetter] || [];
+    if (candidateWords.length === 0) {
+        return false;
+    }
+    candidateWords = sortCandidateWords(candidateWords);
+    for (let c = 0; c < candidateWords.length; c++) {
+        let candidateWord = candidateWords[c];
+        if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
+            series.push(candidateWord);
+            let newAvailableLetters = removeLetters(candidateWord, availableLetters);
+            if (recurse(candidateWord, results, solutionSet, newAvailableLetters)) {
+                if (newAvailableLetters.length === 0) {
+                    let solution = new Solution(series.slice(), series.length, countCharacters(series));
+                    solutionSet.add(solution);
+                    console.log(series);
+                }
+                //return true;
+            }
+            series.pop();
         }
     }
-    return maxRating;
+    return false;
 }
 
 function findSolutions(wordSet) {
@@ -257,5 +249,5 @@ function countCharacters(series) {
 }
 
 export {
-    DICTIONARY_FILENAME, findValidWords, puzzleToArray, findSolutions, series
+    SOLUTION_OUTPUT, DICTIONARY_OXFORD, DICTIONARY_AZ, findValidWords, puzzleToArray, findSolutions, series
 };
