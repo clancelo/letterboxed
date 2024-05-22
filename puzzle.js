@@ -1,17 +1,32 @@
 // Puzzle structure
 const puzzle = [
-    { "id": 0, "value": 'A' },
-    { "id": 1, "value": 'K' },
-    { "id": 2, "value": 'E' },
+    { "id": 0, "value": 'O' },
+    { "id": 1, "value": 'I' },
+    { "id": 2, "value": 'V' },
+    { "id": 3, "value": 'B' },
+    { "id": 4, "value": 'G' },
+    { "id": 5, "value": 'R' },
+    { "id": 6, "value": 'P' },
+    { "id": 7, "value": 'M' },
+    { "id": 8, "value": 'D' },
+    { "id": 9, "value": 'E' },
+    { "id": 10, "value": 'A' },
+    { "id": 11, "value": 'Y' }
+]
+
+const puzzle2 = [
+    { "id": 0, "value": 'Y' },
+    { "id": 1, "value": 'H' },
+    { "id": 2, "value": 'O' },
     { "id": 3, "value": 'L' },
-    { "id": 4, "value": 'I' },
-    { "id": 5, "value": 'O' },
-    { "id": 6, "value": 'J' },
-    { "id": 7, "value": 'N' },
-    { "id": 8, "value": 'T' },
-    { "id": 9, "value": 'P' },
-    { "id": 10, "value": 'R' },
-    { "id": 11, "value": 'M' }
+    { "id": 4, "value": 'F' },
+    { "id": 5, "value": 'V' },
+    { "id": 6, "value": 'R' },
+    { "id": 7, "value": 'T' },
+    { "id": 8, "value": 'N' },
+    { "id": 9, "value": 'I' },
+    { "id": 10, "value": 'W' },
+    { "id": 11, "value": 'G' }
 ]
 
 export default puzzle;

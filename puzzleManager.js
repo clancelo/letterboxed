@@ -32,7 +32,7 @@ class SolutionSet {
     }
     add(solution) {
         this.allSolutions.push(solution);
-        this.allSolutions.sort((solutionA, solutionB) => solutionA.rating - solutionB.rating)
+        //this.allSolutions.sort((solutionA, solutionB) => solutionA.rating - solutionB.rating)
     }
 }
 
@@ -206,6 +206,9 @@ function removeLetters(word, availableLetters) {
 }
 
 function solveWord(word, results, solutionSet, availableLetters) {
+
+    // TODO: check series length and limit answers here???
+
     if (series.length > 5) {
         return false;
     }
@@ -219,15 +222,40 @@ function solveWord(word, results, solutionSet, availableLetters) {
     }
     candidateWords = sortCandidateWords(candidateWords);
     for (let c = 0; c < candidateWords.length; c++) {
+        // TODO: check series length here.
+        // stop checking candidate words after a series-length specific number of words have been added after 1 word
         let candidateWord = candidateWords[c];
+        // if (solutionBreadthLimitReached(series.length)) {
+
+        // }
         if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
             series.push(candidateWord);
             let newAvailableLetters = removeLetters(candidateWord, availableLetters);
             if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
                 if (newAvailableLetters.length === 0) {
                     let solution = new Solution(series.slice(), series.length, countCharacters(series));
-                    solutionSet.add(solution);
-                    console.log(series);
+                    // limit duplicates depending on how deep into solution
+                    // 16 max on 1st word, 8 on 2nd, 4 on 3rd, 2 on 4th, 1 on fifth
+                    // use series length and compare to previous solutions in solutionSe
+                    // if (solutionSet.allSolutions[-1][series.length - 2] === series[series.length - 2]) {
+
+                    // }
+                    const seriesLength = series.length;
+                    const allSolutionsLength = solutionSet.allSolutions.length;
+                    if (allSolutionsLength <= 1) {
+                        solutionSet.add(solution);
+                        console.log(series);
+                    } else {
+                        let previousSolutionLength = solutionSet.allSolutions[allSolutionsLength - 1].wordCount;
+                        let currentWord = series[seriesLength - 2];
+                        let previousWord = solutionSet.allSolutions[allSolutionsLength - 1].solution[previousSolutionLength - 2];
+                        let evenEarlierWord = solutionSet.allSolutions[allSolutionsLength - 2].solution[previousSolutionLength - 2];
+                        if (!(currentWord === previousWord && previousWord === evenEarlierWord)) {
+                            solutionSet.add(solution);
+                            console.log(series);
+                        }
+                    }
+
                 }
                 //return true;
             }
