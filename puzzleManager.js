@@ -1,97 +1,8 @@
-import puzzle from './puzzle.js'
+import { Node, WordSet, SolutionSet, Solution } from './puzzleUtility.js'
+import { puzzleToArray, countCharacters, removeLetters, sortCandidateWords, wordUsesAvailableLetter, addValidWord, buildWordSequence } from './puzzleUtility.js'
 
 let series = [];
-let DICTIONARY_OXFORD = './dictionaries/oxford.txt';
-let DICTIONARY_AZ = './dictionaries/az.txt';
-let SOLUTION_OUTPUT = './solutions/solutionSet.txt';
 
-class DepthLimiter {
-    constructor() {
-        this.wordCounts = [0, 0, 0, 0, 0];
-    }
-}
-
-let depthLimiter = new DepthLimiter();
-
-class Node {
-    constructor(id, depth) {
-        this.id = id;
-        this.depth = depth;
-        this.children = [];
-    }
-}
-
-class WordSet {
-    constructor() {
-        this.allWords = {};
-        this.startsWith = {};
-        this.endsWith = {};
-        this.rating = {};
-    }
-    getWords() {
-        return Object.keys(this.allWords);
-    }
-}
-
-class SolutionSet {
-    constructor() {
-        this.currentSolution = [];
-        this.allSolutions = [];
-    }
-    add(solution) {
-        this.allSolutions.push(solution);
-        //this.allSolutions.sort((solutionA, solutionB) => solutionA.rating - solutionB.rating)
-    }
-}
-
-class Solution {
-    constructor(solution, wordCount, characterCount) {
-        this.solution = solution;
-        this.wordCount = wordCount;
-        this.characterCount = characterCount;
-        this.rating = wordCount * characterCount;
-    }
-}
-
-/**
- * Determines if a letter combination is a valid move. Source and destination
- * values range from -1 to 11. A source value of -1 indicates that the destination
- * node is the first letter of the word and thus any move is valid. Values 0, 1,
- * and 2 will map to the top of the puzzle and the remaining values continue 
- * clockwise until 11.
- * 
- * @param {number} source 
- * @param {number} destination 
- * @returns 
- */
-function isValidMove(source, destination) {
-
-    // Validate input
-    if (source < -1 || source > 11) return false;
-    if (-1 < source > 11) return false;
-    if (source === -1) return true;
-
-    // Identify which sides of the puzzle are being tested
-    const sourceGroup = Math.floor(source / 3);
-    const destinationGroup = Math.floor(destination / 3);
-
-    return !(sourceGroup === destinationGroup);
-}
-
-/**
- * Builds the connection tree of a word for a specific puzzle. The word and a 
- * node along with the current depth are passed to this recursive function. All
- * possible ways of spelling the word within the puzzle are mapped and the
- * max depth reached is returned. If the returned value is equal to the length
- * of the word, the word CAN be spelled within the specific puzzle.
- * 
- *  // CLEAN UP
- * 
- * @param {string} word 
- * @param {Node} currentNode 
- * @param {number} depth 
- * @returns the max depth reached in the tree below this node
- */
 function buildWordSequence(word, currentNode, depth) {
 
     // The currentNode holds the last letter of the word
@@ -124,47 +35,6 @@ function buildWordSequence(word, currentNode, depth) {
     return maxChildDepth;
 }
 
-function rateWord(word) {
-
-    let i;
-    let uniqueLetters = new Set();
-    for (i = 0; i < word.length; i++) {
-        uniqueLetters.add(word[i]);
-    }
-    return uniqueLetters.size;
-}
-
-
-function addValidWord(validWords, word) {
-
-    // Populate startsWith
-    const firstLetter = word[0];
-    validWords.startsWith[firstLetter] = validWords.startsWith[firstLetter] ?? [];
-    validWords.startsWith[firstLetter].push(word);
-
-    // Populate endsWith
-    const lastLetter = word[word.length - 1];
-    validWords.endsWith[lastLetter] = validWords.endsWith[lastLetter] ?? [];
-    validWords.endsWith[lastLetter].push(word);
-
-    // Populate rating and allWords
-    const wordRating = rateWord(word);
-    validWords.rating[wordRating] = validWords.rating[wordRating] ?? [];
-    validWords.rating[wordRating].push(word);
-    validWords.allWords[word] = wordRating;
-
-}
-
-/**
- * Generates an array of words that can be spelled in the puzzle. A tree is built
- * for each word but we only record whether the word can be spelled at least one
- * way.
- * 
- * TODO: Record the puzzle id sequence for each way to spell the word 
- * 
- * @param {array} words 
- * @returns an array of words that can be spelled in the puzzle
- */
 function findValidWords(allWords) {
     const startingDepth = 0;
     let validWords = new WordSet();
@@ -176,41 +46,6 @@ function findValidWords(allWords) {
         }
     });
     return validWords;
-}
-
-function puzzleToArray() {
-    let puzzleArray = [];
-    puzzle.forEach(letter => {
-        puzzleArray.push(letter.value);
-    });
-    return puzzleArray;
-}
-
-function wordUsesAvailableLetter(word, availableLetters) {
-    for (let letter = 0; letter < word.length; letter++) {
-        if (availableLetters.some(item => item.toLowerCase() === word[letter].toLowerCase())) {
-            return true;
-        }
-    }
-    return false;
-
-}
-
-function sortCandidateWords(candidateWords) {
-    //TODO: Complete this function
-    return candidateWords;
-}
-
-function removeLetters(word, availableLetters) {
-    let newAvailableLetters = [];
-    availableLetters.forEach(letter => {
-        if (!word.includes(letter)) {
-            if (!newAvailableLetters.includes(letter)) {
-                newAvailableLetters.push(letter);
-            }
-        }
-    });
-    return newAvailableLetters;
 }
 
 function isBreadthLimitReached(solutionSet, currentSeries) {
@@ -251,10 +86,6 @@ function solveWord(word, results, solutionSet, availableLetters) {
         return false;
     }
     candidateWords = sortCandidateWords(candidateWords);
-    if (word === 'MEMBER') {
-        let g = 5;
-    }
-
     for (let c = 0; c < candidateWords.length; c++) {
 
         let candidateWord = candidateWords[c];
@@ -293,14 +124,4 @@ function findSolutions(validWordSet) {
     return solutionSet;
 }
 
-function countCharacters(series) {
-    let count = 0;
-    for (let word = 0; word < series.length; word++) {
-        count += series[word].length;
-    }
-    return count;
-}
-
-export {
-    SOLUTION_OUTPUT, DICTIONARY_OXFORD, DICTIONARY_AZ, findValidWords, puzzleToArray, findSolutions, series
-};
+export { findValidWords, findSolutions };
