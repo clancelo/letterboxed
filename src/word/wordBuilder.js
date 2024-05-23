@@ -1,4 +1,4 @@
-import puzzle from '../puzzle/puzzleArchive.js'
+import { puzzle } from '../puzzle/puzzleArchive.js'
 import { Node, WordSet } from './wordData.js'
 
 // Returns a WordSet containing all the words that can be spelled in the puzzle
@@ -58,7 +58,5 @@ function isValidMove(source, destination) {
     const destinationGroup = Math.floor(destination / 3);
     return sourceGroup !== destinationGroup;
 }
-
-
 
 export { getValidWords };

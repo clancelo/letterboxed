@@ -76,5 +76,7 @@ const puzzleArchive = {
     ]
 }
 
-export default puzzleArchive.archive[puzzleArchive.currentPuzzle];
-// export default puzzleArchive.testPuzzle;
+const currentPuzzle = puzzleArchive.archive[puzzleArchive.currentPuzzle];
+const textPuzzle = puzzleArchive.testPuzzle;
+
+export { currentPuzzle as puzzle, textPuzzle };

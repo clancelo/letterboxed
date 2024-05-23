@@ -1,4 +1,4 @@
-import puzzle from '../puzzle/puzzleArchive.js'
+import { puzzle } from '../puzzle/puzzleArchive.js'
 import { SolutionSet, Solution } from './solutionData.js'
 
 let series = [];
