@@ -1,6 +1,21 @@
 // Collection of valid puzzles
 const puzzleArchive = {
     "currentPuzzle": 1,
+    "testPuzzle":
+        [
+            { "id": 0, "value": 'O' },
+            { "id": 1, "value": 'E' },
+            { "id": 2, "value": 'P' },
+            { "id": 3, "value": 'B' },
+            { "id": 4, "value": 'E' },
+            { "id": 5, "value": 'Y' },
+            { "id": 6, "value": 'K' },
+            { "id": 7, "value": 'S' },
+            { "id": 8, "value": 'R' },
+            { "id": 9, "value": 'U' },
+            { "id": 10, "value": 'C' },
+            { "id": 11, "value": 'A' }
+        ],
     "archive": [
         [
             { "id": 0, "value": 'Q' },
@@ -62,3 +77,4 @@ const puzzleArchive = {
 }
 
 export default puzzleArchive.archive[puzzleArchive.currentPuzzle];
+// export default puzzleArchive.testPuzzle;
