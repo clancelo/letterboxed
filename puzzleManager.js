@@ -5,6 +5,14 @@ let DICTIONARY_OXFORD = './dictionaries/oxford.txt';
 let DICTIONARY_AZ = './dictionaries/az.txt';
 let SOLUTION_OUTPUT = './solutions/solutionSet.txt';
 
+class DepthLimiter {
+    constructor() {
+        this.wordCounts = [0, 0, 0, 0, 0];
+    }
+}
+
+let depthLimiter = new DepthLimiter();
+
 class Node {
     constructor(id, depth) {
         this.id = id;
@@ -205,11 +213,33 @@ function removeLetters(word, availableLetters) {
     return newAvailableLetters;
 }
 
+function isBreadthLimitReached(solutionSet, currentSeries) {
+    if (solutionSet.allSolutions.length === 0) {
+    } else if (solutionSet.allSolutions.length > 18) {
+        //console.log(currentSeries);
+        let base = 2;
+        let exponent = 5 - currentSeries.length;
+        let numAllowedRepeats = Math.pow(base, exponent);
+        let rangeEnd = solutionSet.allSolutions.length;
+        let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
+        let solutionRange = solutionSet.allSolutions.slice(rangeStart, rangeEnd)
+        let y = 1;
+        // do all values from currentSeries appear in solutionSet the maximum
+        // number of times? return true;
+        for (let i = 0; i < solutionRange.length - 1; i++) {
+            let currentSolution = currentSeries[currentSeries.length - 1];
+            // let currentSolution = solutionRange[i].solution[currentSeries.length - 1];
+            let nextSolution = solutionRange[i].solution[currentSeries.length - 1];
+            if (currentSolution !== nextSolution) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 function solveWord(word, results, solutionSet, availableLetters) {
-
-    // TODO: check series length and limit answers here???
-
-    if (series.length > 5) {
+    if (series.length === 5 && availableLetters.length !== 0) {
         return false;
     }
     if (availableLetters.length === 0) {
@@ -221,43 +251,27 @@ function solveWord(word, results, solutionSet, availableLetters) {
         return false;
     }
     candidateWords = sortCandidateWords(candidateWords);
-    for (let c = 0; c < candidateWords.length; c++) {
-        // TODO: check series length here.
-        // stop checking candidate words after a series-length specific number of words have been added after 1 word
-        let candidateWord = candidateWords[c];
-        // if (solutionBreadthLimitReached(series.length)) {
+    if (word === 'MEMBER') {
+        let g = 5;
+    }
 
-        // }
+    for (let c = 0; c < candidateWords.length; c++) {
+
+        let candidateWord = candidateWords[c];
         if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
+            if (isBreadthLimitReached(solutionSet, series.slice())) {
+                break;
+            }
             series.push(candidateWord);
             let newAvailableLetters = removeLetters(candidateWord, availableLetters);
             if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
                 if (newAvailableLetters.length === 0) {
                     let solution = new Solution(series.slice(), series.length, countCharacters(series));
-                    // limit duplicates depending on how deep into solution
-                    // 16 max on 1st word, 8 on 2nd, 4 on 3rd, 2 on 4th, 1 on fifth
-                    // use series length and compare to previous solutions in solutionSe
-                    // if (solutionSet.allSolutions[-1][series.length - 2] === series[series.length - 2]) {
-
-                    // }
-                    const seriesLength = series.length;
-                    const allSolutionsLength = solutionSet.allSolutions.length;
-                    if (allSolutionsLength <= 1) {
-                        solutionSet.add(solution);
-                        console.log(series);
-                    } else {
-                        let previousSolutionLength = solutionSet.allSolutions[allSolutionsLength - 1].wordCount;
-                        let currentWord = series[seriesLength - 2];
-                        let previousWord = solutionSet.allSolutions[allSolutionsLength - 1].solution[previousSolutionLength - 2];
-                        let evenEarlierWord = solutionSet.allSolutions[allSolutionsLength - 2].solution[previousSolutionLength - 2];
-                        if (!(currentWord === previousWord && previousWord === evenEarlierWord)) {
-                            solutionSet.add(solution);
-                            console.log(series);
-                        }
-                    }
-
+                    solutionSet.add(solution);
+                    console.log(series);
                 }
-                //return true;
+            } else {
+                // console.log(series)
             }
             series.pop();
         }

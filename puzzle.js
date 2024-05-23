@@ -1,6 +1,21 @@
 // Puzzle structure
 const puzzle = [
     { "id": 0, "value": 'O' },
+    { "id": 1, "value": 'E' },
+    { "id": 2, "value": 'P' },
+    { "id": 3, "value": 'B' },
+    { "id": 4, "value": 'H' },
+    { "id": 5, "value": 'Y' },
+    { "id": 6, "value": 'K' },
+    { "id": 7, "value": 'S' },
+    { "id": 8, "value": 'R' },
+    { "id": 9, "value": 'U' },
+    { "id": 10, "value": 'C' },
+    { "id": 11, "value": 'A' }
+]
+
+const puzzle1 = [
+    { "id": 0, "value": 'O' },
     { "id": 1, "value": 'I' },
     { "id": 2, "value": 'V' },
     { "id": 3, "value": 'B' },
@@ -13,6 +28,7 @@ const puzzle = [
     { "id": 10, "value": 'A' },
     { "id": 11, "value": 'Y' }
 ]
+
 
 const puzzle2 = [
     { "id": 0, "value": 'Y' },
