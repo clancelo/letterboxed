@@ -1,6 +1,7 @@
-import { readFileLimited, writeSolutionsToFile } from './fileManager.js'
-import { findValidWords, findSolutions } from './puzzleManager.js'
-import { DICTIONARY_AZ, DICTIONARY_OXFORD, SOLUTION_OUTPUT } from './puzzleUtility.js'
+import { readFileLimited, writeSolutionsToFile } from './file/fileManager.js'
+import { findValidWords } from './word/wordBuilder.js'
+import { findSolutions } from './solution/solutionBuilder.js'
+import { DICTIONARY_AZ, DICTIONARY_OXFORD, SOLUTION_OUTPUT } from './puzzle/puzzleData.js'
 
 // Read dictionary file for words between 3 and 8 characters
 let allWords = readFileLimited(DICTIONARY_OXFORD, 3, 8);

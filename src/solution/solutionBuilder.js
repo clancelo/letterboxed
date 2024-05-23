@@ -1,52 +1,7 @@
-import { Node, WordSet, SolutionSet, Solution } from './puzzleUtility.js'
-import { puzzleToArray, countCharacters, removeLetters, sortCandidateWords, wordUsesAvailableLetter, addValidWord, buildWordSequence } from './puzzleUtility.js'
+import puzzle from '../puzzle/puzzleArchive.js'
+import { SolutionSet, Solution } from './solutionData.js'
 
 let series = [];
-
-function buildWordSequence(word, currentNode, depth) {
-
-    // The currentNode holds the last letter of the word
-    if (depth >= word.length) { return depth; }
-
-    // Track the depths child trees
-    let maxChildDepth = depth;
-
-    // Loop through puzzle and create nodes at this depth
-    puzzle.forEach(letter => {
-
-        // The puzzle character matches the current letter in the word and is a
-        // valid connection according to the puzzle rules.
-        if (letter.value === word[depth] && isValidMove(currentNode.id, letter.id)) {
-
-            // Create new node as child of currentNode
-            let newLetterNode = new Node(letter.id, depth);
-            currentNode.children.push(newLetterNode);
-
-            // Recurse on the child node at an incremented depth
-            let childDepth = buildWordSequence(word, newLetterNode, depth + 1);
-
-            // Update maxChildDepth
-            maxChildDepth = Math.max(maxChildDepth, childDepth);
-
-        }
-    });
-
-    // Return the max depth reached under this node
-    return maxChildDepth;
-}
-
-function findValidWords(allWords) {
-    const startingDepth = 0;
-    let validWords = new WordSet();
-    allWords.forEach(word => {
-        let startingNode = new Node(-1, 0);
-        let wordDepth = buildWordSequence(word, startingNode, startingDepth);
-        if (wordDepth === word.length) {
-            addValidWord(validWords, word);
-        }
-    });
-    return validWords;
-}
 
 function isBreadthLimitReached(solutionSet, currentSeries) {
     if (solutionSet.allSolutions.length === 0) {
@@ -124,4 +79,47 @@ function findSolutions(validWordSet) {
     return solutionSet;
 }
 
-export { findValidWords, findSolutions };
+function puzzleToArray() {
+    let puzzleArray = [];
+    puzzle.forEach(letter => {
+        puzzleArray.push(letter.value);
+    });
+    return puzzleArray;
+}
+
+function wordUsesAvailableLetter(word, availableLetters) {
+    for (let letter = 0; letter < word.length; letter++) {
+        if (availableLetters.some(item => item.toLowerCase() === word[letter].toLowerCase())) {
+            return true;
+        }
+    }
+    return false;
+
+}
+
+function sortCandidateWords(candidateWords) {
+    //TODO: Complete this function
+    return candidateWords;
+}
+
+function removeLetters(word, availableLetters) {
+    let newAvailableLetters = [];
+    availableLetters.forEach(letter => {
+        if (!word.includes(letter)) {
+            if (!newAvailableLetters.includes(letter)) {
+                newAvailableLetters.push(letter);
+            }
+        }
+    });
+    return newAvailableLetters;
+}
+
+function countCharacters(series) {
+    let count = 0;
+    for (let word = 0; word < series.length; word++) {
+        count += series[word].length;
+    }
+    return count;
+}
+
+export { findSolutions };
