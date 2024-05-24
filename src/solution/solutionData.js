@@ -5,7 +5,6 @@ class SolutionSet {
     }
     add(solution) {
         this.allSolutions.push(solution);
-        //this.allSolutions.sort((solutionA, solutionB) => solutionA.rating - solutionB.rating)
     }
 }
 

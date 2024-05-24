@@ -11,6 +11,7 @@ function getValidWords(allWords) {
         let wordDepth = getWordDepth(word, startingNode);
         if (wordDepth === word.length) {
             validWords.addWord(word);
+            startingNode.print();
         }
     }
     return validWords;
