@@ -76,7 +76,17 @@ const puzzleArchive = {
     ]
 }
 
+// Returns the puzzle as an array of letters
+function puzzleToArray(puzzle) {
+    if (!Array.isArray(puzzle)) { return [] }
+    let puzzleArray = [];
+    for (let i = 0; i < puzzle.length; i++) {
+        puzzleArray.push(puzzle[i].value);
+    }
+    return puzzleArray;
+}
+
 const currentPuzzle = puzzleArchive.archive[puzzleArchive.currentPuzzle];
 const textPuzzle = puzzleArchive.testPuzzle;
 
-export { currentPuzzle as puzzle, textPuzzle };
+export { currentPuzzle as puzzle, textPuzzle, puzzleToArray };

@@ -1,4 +1,4 @@
-import { puzzle } from '../puzzle/puzzleArchive.js'
+import { puzzle, puzzleToArray } from '../puzzle/puzzleArchive.js'
 import { SolutionSet, Solution } from './solutionData.js'
 
 let series = [];
@@ -8,7 +8,7 @@ function isBreadthLimitReached(solutionSet, currentSeries) {
     } else if (solutionSet.allSolutions.length > 18) {
         //console.log(currentSeries);
         let base = 2;
-        let exponent = 5 - currentSeries.length;
+        let exponent = 10 - currentSeries.length;
         let numAllowedRepeats = Math.pow(base, exponent);
         let rangeEnd = solutionSet.allSolutions.length;
         let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
@@ -40,19 +40,18 @@ function solveWord(word, results, solutionSet, availableLetters) {
     if (candidateWords.length === 0) {
         return false;
     }
-    candidateWords = sortCandidateWords(candidateWords);
     for (let c = 0; c < candidateWords.length; c++) {
 
         let candidateWord = candidateWords[c];
-        if (wordUsesAvailableLetter(candidateWord, availableLetters)) {
+        if (wordUsesRequiredLetter(candidateWord, availableLetters)) {
             if (isBreadthLimitReached(solutionSet, series.slice())) {
                 break;
             }
             series.push(candidateWord);
-            let newAvailableLetters = removeLetters(candidateWord, availableLetters);
+            let newAvailableLetters = getNewRequiredLetters(candidateWord, availableLetters);
             if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
                 if (newAvailableLetters.length === 0) {
-                    let solution = new Solution(series.slice(), series.length, countCharacters(series));
+                    let solution = new Solution(series.slice(), series.length, getCharacterCount(series));
                     solutionSet.add(solution);
                     console.log(series);
                 }
@@ -67,59 +66,49 @@ function solveWord(word, results, solutionSet, availableLetters) {
 
 function findSolutions(validWordSet) {
     let words = validWordSet.getWords();
-    let remainingLetters = puzzleToArray();
+    let remainingLetters = puzzleToArray(puzzle);
     let solutionSet = new SolutionSet();
     for (let i = 0; i < words.length; i++) {
         let candidateWord = words[i];
         series.push(candidateWord);
-        let newRemainingLetters = removeLetters(candidateWord, remainingLetters);
+        let newRemainingLetters = getNewRequiredLetters(candidateWord, remainingLetters);
         solveWord(candidateWord, validWordSet, solutionSet, newRemainingLetters);
         series.pop();
     }
     return solutionSet;
 }
 
-function puzzleToArray() {
-    let puzzleArray = [];
-    puzzle.forEach(letter => {
-        puzzleArray.push(letter.value);
-    });
-    return puzzleArray;
-}
-
-function wordUsesAvailableLetter(word, availableLetters) {
-    for (let letter = 0; letter < word.length; letter++) {
-        if (availableLetters.some(item => item.toLowerCase() === word[letter].toLowerCase())) {
+// Returns whether the word contains at least 1 letter in requiredLetters 
+function wordUsesRequiredLetter(word, requiredLetters) {
+    if (typeof word !== 'string') { return false }
+    if (!Array.isArray(requiredLetters)) { return false }
+    const requiredLettersSet = new Set(requiredLetters);
+    for (let character of word) {
+        if (requiredLettersSet.has(character)) {
             return true;
         }
     }
     return false;
-
 }
 
-function sortCandidateWords(candidateWords) {
-    //TODO: Complete this function
-    return candidateWords;
-}
-
-function removeLetters(word, availableLetters) {
-    let newAvailableLetters = [];
-    availableLetters.forEach(letter => {
-        if (!word.includes(letter)) {
-            if (!newAvailableLetters.includes(letter)) {
-                newAvailableLetters.push(letter);
-            }
+// Returns an array of the letters in requiredLetters minus the letters in word
+function getNewRequiredLetters(word, requiredLetters) {
+    if (typeof word !== 'string') { return }
+    if (!Array.isArray(requiredLetters)) { return }
+    let newRequiredLetters = new Set();
+    const wordAsSet = new Set(word);
+    for (let letter of requiredLetters) {
+        if (!wordAsSet.has(letter)) {
+            newRequiredLetters.add(letter);
         }
-    });
-    return newAvailableLetters;
+    }
+    return Array.from(newRequiredLetters);
 }
 
-function countCharacters(series) {
-    let count = 0;
-    for (let word = 0; word < series.length; word++) {
-        count += series[word].length;
-    }
-    return count;
+// Returns the number of characters in a solution
+function getCharacterCount(solution) {
+    if (!Array.isArray(solution)) { return 0 }
+    return solution.join('').length;
 }
 
 export { findSolutions };
