@@ -68,10 +68,10 @@ function solveWord(word, results, solutionSet, availableLetters) {
 /**
  * Generates a SolutionSet for a given WordSet and puzzle.
  * @param {WordSet} validWordSet - the collection of words that can be spelled for a given puzzle
- * @param {*} puzzleIndex - the index in the archive of the puzzle being solved
+ * @param {boolean} willSort - true if the solutions are to be sorted before return
  * @returns a SolutionSet of possible solutions for a given set of words and puzzle
  */
-function getSolutions(validWordSet) {
+function getSolutions(validWordSet, willSort) {
     if (!(validWordSet instanceof WordSet)) { return new SolutionSet() }
     let words = validWordSet.getWords();
     let remainingLetters = getPuzzleLetters();
@@ -83,6 +83,7 @@ function getSolutions(validWordSet) {
         solveWord(candidateWord, validWordSet, solutionSet, newRemainingLetters);
         series.pop();
     }
+    if (willSort) { solutionSet.sort() }
     return solutionSet;
 }
 
@@ -119,4 +120,4 @@ function getCharacterCount(solution) {
     return solution.join('').length;
 }
 
-export { getSolutions as findSolutions };
+export { getSolutions };

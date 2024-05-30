@@ -1,19 +1,6 @@
 import fs from 'fs';
 import { resolve } from 'path';
 
-let pathStructure = {
-    basePath: ''
-}
-
-/**
- * Sets the base path for this instance of the program
- * @param {string} basePath - the base path of the program
- */
-function setBasePath(basePath) {
-    if (typeof basePath !== 'string') { return false }
-    pathStructure.basePath = basePath;
-    return true;
-}
 
 /**
  * Reads a file of newline-seperated words and returns the words as an array. If
@@ -23,14 +10,12 @@ function setBasePath(basePath) {
  * @param {string} maxLength - the maximum word length to include
  * @returns an array of words in the specified length range
  */
-function readFile(filePath, minLength, maxLength) {
+function readFile(basePath, filePath, minLength, maxLength) {
     if (typeof filePath !== 'string') { return [] }
     if (typeof minLength !== 'number') { return [] }
     if (typeof maxLength !== 'number') { return [] }
     try {
-        let t = pathStructure.basePath;
-        let b = resolve(pathStructure.basePath, filePath);
-        const fileConent = fs.readFileSync(resolve(pathStructure.basePath, filePath), 'utf8');
+        const fileConent = fs.readFileSync(resolve(basePath, filePath), 'utf8');
         let wordList = fileConent.split('\n');
         wordList = wordList
             .filter(word => word.trim() !== '') // remove empty words
@@ -50,13 +35,13 @@ function readFile(filePath, minLength, maxLength) {
  * @param {string} filePath - the relative path to a destination file
  * @returns true if the file was written successfully, false otherwise
  */
-function writeSolutionsToFile(solutionsArray, filePath) {
+function writeSolutionsToFile(solutionsArray, basePath, filePath) {
     if (!(Array.isArray(solutionsArray))) { return false }
     if (typeof filePath !== 'string') { return false }
     const solutionsAsText = solutionsArray.map(solution => solution.toText());
     const fileContent = solutionsAsText.join('\n');
     try {
-        fs.writeFileSync(resolve(pathStructure.basePath, filePath), fileContent, { encoding: 'utf-8' });
+        fs.writeFileSync(resolve(basePath, filePath), fileContent, { encoding: 'utf-8' });
         return true;
     } catch (fileWriteError) {
         console.error(`Error writing file to path: ${filePath}`);
@@ -64,4 +49,4 @@ function writeSolutionsToFile(solutionsArray, filePath) {
     }
 }
 
-export { readFile, writeSolutionsToFile, setBasePath };
+export { readFile, writeSolutionsToFile };
