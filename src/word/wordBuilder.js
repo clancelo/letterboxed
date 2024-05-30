@@ -1,4 +1,4 @@
-import { puzzle } from '../puzzle/puzzleArchive.js'
+import { getPuzzle } from '../puzzle/puzzleArchive.js'
 import { Node, WordSet } from './wordData.js'
 
 // Returns a WordSet containing all the words that can be spelled in the puzzle
@@ -25,7 +25,9 @@ function getWordDepth(word, startingNode) {
 
 // Gets the depth of the graph below a specific letter node
 function getDepth(word, currentLetterNode, depth) {
+    //TODO input validation
     if (depth >= word.length) { return depth; }
+    let puzzle = getPuzzle() // importing a return function instead of the object itself
     let maxDepthReached = depth;
     for (let i = 0; i < puzzle.length; i++) {
         const letter = puzzle[i];
@@ -51,9 +53,9 @@ function letterIsValidMove(letter, word, depth, currentNode) {
 
 // Determines if two letters can follow each other in the puzzle
 function isValidMove(source, destination) {
-    if (source < -1 || source > 11) return false;
-    if (destination < 0 || destination > 11) return false;
-    if (source === -1) return true;
+    if (source < -1 || source > 11) { return false }
+    if (destination < 0 || destination > 11) { return false }
+    if (source === -1) { return true }
     const sourceGroup = Math.floor(source / 3);
     const destinationGroup = Math.floor(destination / 3);
     return sourceGroup !== destinationGroup;

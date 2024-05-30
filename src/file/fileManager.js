@@ -1,4 +1,9 @@
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Reads a file of newline-seperated words and returns the words as an array. If
@@ -13,7 +18,7 @@ function readFile(filePath, minLength, maxLength) {
     if (typeof minLength !== 'number') { return [] }
     if (typeof maxLength !== 'number') { return [] }
     try {
-        const fileConent = fs.readFileSync(filePath, 'utf8');
+        const fileConent = fs.readFileSync(resolve(__dirname, filePath), 'utf8');
         let wordList = fileConent.split('\n');
         wordList = wordList
             .filter(word => word.trim() !== '') // remove empty words
@@ -39,7 +44,7 @@ function writeSolutionsToFile(solutionsArray, filePath) {
     const solutionsAsText = solutionsArray.map(solution => solution.toText());
     const fileContent = solutionsAsText.join('\n');
     try {
-        fs.writeFileSync(filePath, fileContent, { encoding: 'utf-8' });
+        fs.writeFileSync(resolve(__dirname, filePath), fileContent, { encoding: 'utf-8' });
         return true;
     } catch (fileWriteError) {
         console.error(`Error writing file to path: ${filePath}`);

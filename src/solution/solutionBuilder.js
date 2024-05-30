@@ -1,5 +1,6 @@
-import { puzzle, puzzleToArray } from '../puzzle/puzzleArchive.js'
+import { puzzleToArray } from '../puzzle/puzzleArchive.js'
 import { SolutionSet, Solution } from './solutionData.js'
+import { WordSet } from '../word/wordData.js'
 
 let series = [];
 
@@ -64,9 +65,16 @@ function solveWord(word, results, solutionSet, availableLetters) {
     return false;
 }
 
-function findSolutions(validWordSet) {
+/**
+ * Generates a SolutionSet for a given WordSet and puzzle.
+ * @param {WordSet} validWordSet - the collection of words that can be spelled for a given puzzle
+ * @param {*} puzzleIndex - the index in the archive of the puzzle being solved
+ * @returns a SolutionSet of possible solutions for a given set of words and puzzle
+ */
+function getSolutions(validWordSet) {
+    if (!(validWordSet instanceof WordSet)) { return new SolutionSet() }
     let words = validWordSet.getWords();
-    let remainingLetters = puzzleToArray(puzzle);
+    let remainingLetters = puzzleToArray();
     let solutionSet = new SolutionSet();
     for (let i = 0; i < words.length; i++) {
         let candidateWord = words[i];
@@ -93,8 +101,8 @@ function wordUsesRequiredLetter(word, requiredLetters) {
 
 // Returns an array of the letters in requiredLetters minus the letters in word
 function getNewRequiredLetters(word, requiredLetters) {
-    if (typeof word !== 'string') { return }
-    if (!Array.isArray(requiredLetters)) { return }
+    if (typeof word !== 'string') { return [] }
+    if (!Array.isArray(requiredLetters)) { return [] }
     let newRequiredLetters = new Set();
     const wordAsSet = new Set(word);
     for (let letter of requiredLetters) {
@@ -111,4 +119,4 @@ function getCharacterCount(solution) {
     return solution.join('').length;
 }
 
-export { findSolutions };
+export { getSolutions as findSolutions };
