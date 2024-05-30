@@ -1,9 +1,19 @@
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import { resolve } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+let pathStructure = {
+    basePath: ''
+}
+
+/**
+ * Sets the base path for this instance of the program
+ * @param {string} basePath - the base path of the program
+ */
+function setBasePath(basePath) {
+    if (typeof basePath !== 'string') { return false }
+    pathStructure.basePath = basePath;
+    return true;
+}
 
 /**
  * Reads a file of newline-seperated words and returns the words as an array. If
@@ -18,7 +28,9 @@ function readFile(filePath, minLength, maxLength) {
     if (typeof minLength !== 'number') { return [] }
     if (typeof maxLength !== 'number') { return [] }
     try {
-        const fileConent = fs.readFileSync(resolve(__dirname, filePath), 'utf8');
+        let t = pathStructure.basePath;
+        let b = resolve(pathStructure.basePath, filePath);
+        const fileConent = fs.readFileSync(resolve(pathStructure.basePath, filePath), 'utf8');
         let wordList = fileConent.split('\n');
         wordList = wordList
             .filter(word => word.trim() !== '') // remove empty words
@@ -44,7 +56,7 @@ function writeSolutionsToFile(solutionsArray, filePath) {
     const solutionsAsText = solutionsArray.map(solution => solution.toText());
     const fileContent = solutionsAsText.join('\n');
     try {
-        fs.writeFileSync(resolve(__dirname, filePath), fileContent, { encoding: 'utf-8' });
+        fs.writeFileSync(resolve(pathStructure.basePath, filePath), fileContent, { encoding: 'utf-8' });
         return true;
     } catch (fileWriteError) {
         console.error(`Error writing file to path: ${filePath}`);
@@ -52,4 +64,4 @@ function writeSolutionsToFile(solutionsArray, filePath) {
     }
 }
 
-export { readFile, writeSolutionsToFile };
+export { readFile, writeSolutionsToFile, setBasePath };

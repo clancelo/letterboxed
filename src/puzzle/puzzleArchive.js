@@ -1,6 +1,6 @@
-// Collection of valid puzzles
+
 let puzzleArchive = {
-    currentPuzzle: 0,
+    currentPuzzleIndex: 0,
     testPuzzle:
         [
             { id: 0, value: 'O' },
@@ -107,11 +107,11 @@ let puzzleArchive = {
 function setPuzzle(puzzleIndex) {
     // if (typeof archiveIndex !== 'number') { return [] }
     // if (archiveIndex < 0 || archiveIndex >= puzzleArchive.archive.length) { return [] }
-    puzzleArchive.currentPuzzle = puzzleIndex;
+    puzzleArchive.currentPuzzleIndex = puzzleIndex;
 }
 
 function getPuzzle() {
-    return puzzleArchive.archive[puzzleArchive.currentPuzzle]
+    return puzzleArchive.archive[puzzleArchive.currentPuzzleIndex]
 }
 
 /**
@@ -119,12 +119,9 @@ function getPuzzle() {
  * @param {number} archiveIndex - the puzzle index in the archive to retrieve 
  * @returns an array of letters representing the puzzle
  */
-function puzzleToArray() {
-    const puzzle = puzzleArchive.archive[puzzleArchive.currentPuzzle];
+function getPuzzleLetters() {
+    const puzzle = puzzleArchive.archive[puzzleArchive.currentPuzzleIndex];
     return puzzle.map(letter => letter.value);
 }
 
-const currentPuzzle = puzzleArchive.archive[puzzleArchive.currentPuzzle];
-const textPuzzle = puzzleArchive.testPuzzle;
-
-export { setPuzzle, getPuzzle, textPuzzle, puzzleToArray };
+export { setPuzzle, getPuzzle, getPuzzleLetters };

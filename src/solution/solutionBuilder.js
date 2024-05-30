@@ -1,4 +1,4 @@
-import { puzzleToArray } from '../puzzle/puzzleArchive.js'
+import { getPuzzleLetters } from '../puzzle/puzzleArchive.js'
 import { SolutionSet, Solution } from './solutionData.js'
 import { WordSet } from '../word/wordData.js'
 
@@ -74,7 +74,7 @@ function solveWord(word, results, solutionSet, availableLetters) {
 function getSolutions(validWordSet) {
     if (!(validWordSet instanceof WordSet)) { return new SolutionSet() }
     let words = validWordSet.getWords();
-    let remainingLetters = puzzleToArray();
+    let remainingLetters = getPuzzleLetters();
     let solutionSet = new SolutionSet();
     for (let i = 0; i < words.length; i++) {
         let candidateWord = words[i];
