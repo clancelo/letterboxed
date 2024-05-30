@@ -21,6 +21,10 @@ class Solution {
         this.characterCount = characterCount;
         this.rating = wordCount * characterCount;
     }
+    toText() {
+        return this.rating + ", " + this.wordCount + ", " + this.characterCount + ", " + this.solution;
+    }
+
 }
 
 export { Solution, SolutionSet };

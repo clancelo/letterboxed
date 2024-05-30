@@ -1,72 +1,50 @@
-
 import fs from 'fs';
 
 /**
- * Writes an array to a specific filename.
- * @param {array} array 
- * @param {string} filePath 
+ * Reads a file of newline-seperated words and returns the words as an array. If
+ * a file read error occurs, an empty array is returned.
+ * @param {string} filePath - the relative path to a source file
+ * @param {string} minLength - the minimum word length to include
+ * @param {string} maxLength - the maximum word length to include
+ * @returns an array of words in the specified length range
  */
-function writeArrayToFile(array, filePath) {
-    const stringArray = array.map(item => item.toString());
-    const content = stringArray.join('\n');
-    fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
-}
-
-function solutionToText(solution) {
-    return solution.rating + ", " + solution.wordCount + ", " + solution.characterCount + ", " + solution.solution;
-}
-
-/**
- * Writes an array to a specific filename.
- * @param {array} array 
- * @param {string} filePath 
- */
-function writeSolutionsToFile(array, filePath) {
-    const stringArray = array.map(item =>
-        solutionToText(item)
-    );
-    const content = stringArray.join('\n');
-    fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
-}
-
-/**
- * Reads a file of words and returns an array of the words in the file.
- * @param {string} filename 
- * @returns an array of the words in the file
- */
-function readFile(filename) {
+function readFile(filePath, minLength, maxLength) {
+    if (typeof filePath !== 'string') { return [] }
+    if (typeof minLength !== 'number') { return [] }
+    if (typeof maxLength !== 'number') { return [] }
     try {
-        const data = fs.readFileSync(filename, 'utf8');
-        const rawWordArray = data.split('\n').filter(word => word.trim() !== '');
-        const cleanedWordArray = rawWordArray.map(function (word) {
-            return word.trimEnd("\r").toUpperCase();
-        });
-        return cleanedWordArray;
-    } catch (err) {
-        console.error('Error reading file -> ', err);
+        const fileConent = fs.readFileSync(filePath, 'utf8');
+        let wordList = fileConent.split('\n');
+        wordList = wordList
+            .filter(word => word.trim() !== '') // remove empty words
+            .map(word => word.trim().toUpperCase()) // normalize words
+            .filter(word => word.length <= maxLength) // enforce max length
+            .filter(word => word.length >= minLength); // enforce min length
+        return wordList;
+    } catch (readFileError) {
+        console.error(`Error reading file from path: ${filePath}`);
         return [];
     }
 }
 
 /**
- * Reads a file of words and returns an array of the words in the file.
- * @param {string} filename 
- * @returns an array of the words in the file
+ * Writes an array of Solutions to a specific file path.
+ * @param {array} solutionsArray - the array of Solution objects
+ * @param {string} filePath - the relative path to a destination file
+ * @returns true if the file was written successfully, false otherwise
  */
-function readFileLimited(filename, minLength, maxLength) {
+function writeSolutionsToFile(solutionsArray, filePath) {
+    if (!(Array.isArray(solutionsArray))) { return false }
+    if (typeof filePath !== 'string') { return false }
+    const solutionsAsText = solutionsArray.map(solution => solution.toText());
+    const fileContent = solutionsAsText.join('\n');
     try {
-        const data = fs.readFileSync(filename, 'utf8');
-        const rawWordArray = data.split('\n').filter(word => word.trim() !== '');
-        const cleanedWordArray = rawWordArray.map(function (word) {
-            return word.trimEnd("\r").toUpperCase();
-        });
-        const finalArray1 = cleanedWordArray.filter(word => word.length <= maxLength);
-        const finalArray2 = finalArray1.filter(word => word.length >= minLength);
-        return finalArray2;
-    } catch (err) {
-        console.error('Error reading file -> ', err);
-        return [];
+        fs.writeFileSync(filePath, fileContent, { encoding: 'utf-8' });
+        return true;
+    } catch (fileWriteError) {
+        console.error(`Error writing file to path: ${filePath}`);
+        return false;
     }
 }
 
-export { writeSolutionsToFile, readFileLimited, readFile, writeArrayToFile };
+export { readFile, writeSolutionsToFile };
