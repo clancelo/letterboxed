@@ -6,6 +6,12 @@ class SolutionSet {
     add(solution) {
         this.allSolutions.push(solution);
     }
+    sort() {
+        this.allSolutions.sort(this.compare)
+    }
+    compare(solution1, solution2) {
+        return solution1.rating - solution2.rating;
+    }
 }
 
 class Solution {

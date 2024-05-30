@@ -1,6 +1,6 @@
 // Collection of valid puzzles
 const puzzleArchive = {
-    "currentPuzzle": 1,
+    "currentPuzzle": 0,
     "testPuzzle":
         [
             { "id": 0, "value": 'O' },
@@ -17,6 +17,34 @@ const puzzleArchive = {
             { "id": 11, "value": 'A' }
         ],
     "archive": [
+        [
+            { "id": 0, "value": 'N' },
+            { "id": 1, "value": 'E' },
+            { "id": 2, "value": 'U' },
+            { "id": 3, "value": 'I' },
+            { "id": 4, "value": 'C' },
+            { "id": 5, "value": 'K' },
+            { "id": 6, "value": 'W' },
+            { "id": 7, "value": 'R' },
+            { "id": 8, "value": 'P' },
+            { "id": 9, "value": 'T' },
+            { "id": 10, "value": 'A' },
+            { "id": 11, "value": 'L' }
+        ],
+        [
+            { "id": 0, "value": 'A' },
+            { "id": 1, "value": 'U' },
+            { "id": 2, "value": 'E' },
+            { "id": 3, "value": 'V' },
+            { "id": 4, "value": 'C' },
+            { "id": 5, "value": 'N' },
+            { "id": 6, "value": 'R' },
+            { "id": 7, "value": 'I' },
+            { "id": 8, "value": 'O' },
+            { "id": 9, "value": 'G' },
+            { "id": 10, "value": 'L' },
+            { "id": 11, "value": 'F' }
+        ],
         [
             { "id": 0, "value": 'Q' },
             { "id": 1, "value": 'K' },

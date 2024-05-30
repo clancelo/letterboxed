@@ -9,7 +9,7 @@ class Node {
 
     // Prints the letter graph below this Node
     print() {
-        this.#printIterative(this, 0);
+        this.#printIterative();
     }
 
     // Prints recursively the letter graph below this Node

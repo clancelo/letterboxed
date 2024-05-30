@@ -8,7 +8,7 @@ function isBreadthLimitReached(solutionSet, currentSeries) {
     } else if (solutionSet.allSolutions.length > 18) {
         //console.log(currentSeries);
         let base = 2;
-        let exponent = 10 - currentSeries.length;
+        let exponent = 4 - currentSeries.length;
         let numAllowedRepeats = Math.pow(base, exponent);
         let rangeEnd = solutionSet.allSolutions.length;
         let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
