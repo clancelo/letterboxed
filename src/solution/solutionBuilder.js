@@ -1,4 +1,4 @@
-import { getPuzzleLetters } from '../puzzle/puzzleArchive.js'
+import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
 import { WordSet } from '../word/wordData.js'
 

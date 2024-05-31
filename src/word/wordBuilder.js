@@ -1,4 +1,4 @@
-import { getPuzzle } from '../puzzle/puzzleArchive.js'
+import { getPuzzle } from '../puzzle/puzzleManager.js'
 import { Node, WordSet } from './wordData.js'
 
 // Returns a WordSet containing all the words that can be spelled in the puzzle

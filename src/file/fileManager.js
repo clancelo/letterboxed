@@ -1,10 +1,10 @@
 import fs from 'fs';
 import { resolve } from 'path';
 
-
 /**
  * Reads a file of newline-seperated words and returns the words as an array. If
  * a file read error occurs, an empty array is returned.
+ * @param {string} basePath - the complete path to the program directory
  * @param {string} filePath - the relative path to a source file
  * @param {string} minLength - the minimum word length to include
  * @param {string} maxLength - the maximum word length to include
@@ -32,6 +32,7 @@ function readFile(basePath, filePath, minLength, maxLength) {
 /**
  * Writes an array of Solutions to a specific file path.
  * @param {array} solutionsArray - the array of Solution objects
+ * @param {string} basePath - the complete path to the program directory
  * @param {string} filePath - the relative path to a destination file
  * @returns true if the file was written successfully, false otherwise
  */
