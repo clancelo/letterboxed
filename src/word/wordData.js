@@ -1,5 +1,16 @@
-// An n-graph node that holds puzzle ID, letter, and graph depth information
-class Node {
+/**
+ * An n-graph node that holds puzzle-id, letter, and graph depth. The id is the location within the
+ * puzzle, the letter is the letter at that location, and the depth is the zero-indexed depth into
+ * the spelling of a word.
+ */
+class LetterNode {
+
+    /**
+     * Builds a LetterNode. A default empty letter node is possible to initiate the graph.
+     * @param {number} id - the puzzle-id of this node
+     * @param {number} depth - the zero-indexed location into the word being spelled
+     * @param {string} letter - the letter at this node
+     */
     constructor(id, depth, letter = '') {
         this.id = id;
         this.letter = letter;
@@ -7,12 +18,16 @@ class Node {
         this.children = [];
     }
 
-    // Prints the letter graph below this Node
+    /**
+     * Prints the letter graph below this Node
+     */
     print() {
         this.#printIterative();
     }
 
-    // Prints recursively the letter graph below this Node
+    /**
+     * Prints recursivelt the letter graph below this Node
+     */
     #printRecursive(node, indentLevel) {
         console.log(' '.repeat(indentLevel * 4) + node.letter);
         for (let i = 0; i < node.children.length; i++) {
@@ -20,7 +35,9 @@ class Node {
         }
     }
 
-    // Prints iteratively the letter graph below this Node
+    /**
+     * Prints iteratively the letter graph below this Node
+     */
     #printIterative() {
         let stack = [this];
         while (stack.length > 0) {
@@ -33,8 +50,19 @@ class Node {
     }
 }
 
-// A collection of words and category collections to access words from
+/**
+ * A collection of words and category collections to access the words from. The WordSet contains
+ * 4 collection objects with the following key-value pairings:
+ *  allWords - word:rating 
+ *  startsWith - starting-letter:array-of-words 
+ *  endsWith - ending-letter:array-of-words 
+ *  rating - rating:array-of-words
+ * 
+ */
 class WordSet {
+    /**
+     * Builds a WordSet object
+     */
     constructor() {
         this.allWords = {};
         this.startsWith = {};
@@ -42,12 +70,19 @@ class WordSet {
         this.rating = {};
     }
 
-    // Returns the words in the WordSet as an array
+    /**
+     * Generates a string array from the WordSet that contains all of the words.
+     * @returns a string array containing all the words in the WordSet
+     */
     getWords() {
         return Object.keys(this.allWords);
     }
 
-    // Adds a word the WordSet
+    /**
+     * Adds a word to the WordSet. The word is added to all four collection objects.
+     * @param {string} word - the word to be added
+     * @returns true if the word was addedd successfully, false otherwise
+     */
     addWord(word) {
         if (typeof word !== 'string') { return false };
         if (word.length === 0) { return false };
@@ -62,7 +97,13 @@ class WordSet {
         return true;
     }
 
-    // Adds a word to a collection within the WordSet
+    /**
+     * Adds a word to a collection within the WordSet
+     * @param {object} collection - the collection object being modified
+     * @param {string} key - the key to be added
+     * @param {string} word - the value to be added
+     * @returns true if the key-value pair is added to the collection object
+     */
     #addToCollection(collection, key, word) {
         if (typeof collection !== 'object') { return false }
         if (typeof key !== 'string' && typeof key !== 'number') { return false }
@@ -72,13 +113,21 @@ class WordSet {
         return true;
     }
 
-    // Returns the number of unique characters in a word
+    /**
+     * Returns the number of unique characters in a word
+     * @param {string} word - the word being rated
+     * @returns the number of unique characters in the string
+     */
     #getWordRating(word) {
         if (typeof word !== 'string') { return 0 };
         return new Set(word).size;
     }
 
-    // Returns whether a word has at least 1 invalid character
+    /**
+     * Returns whether a word has at least 1 invalid character
+     * @param {string} word - the word being validated
+     * @returns 
+     */
     #wordHasInvalidCharacters(word) {
         //TODO implement
         return false
@@ -86,4 +135,4 @@ class WordSet {
 
 }
 
-export { Node, WordSet };
+export { LetterNode, WordSet };

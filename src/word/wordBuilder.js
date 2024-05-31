@@ -1,5 +1,5 @@
 import { getPuzzle } from '../puzzle/puzzleManager.js'
-import { Node, WordSet } from './wordData.js'
+import { LetterNode, WordSet } from './wordData.js'
 
 // Returns a WordSet containing all the words that can be spelled in the puzzle
 function getValidWords(allWords) {
@@ -7,7 +7,7 @@ function getValidWords(allWords) {
     let validWords = new WordSet();
     for (let i = 0; i < allWords.length; i++) {
         let word = allWords[i];
-        let startingNode = new Node(-1, -1);
+        let startingNode = new LetterNode(-1, -1);
         let wordDepth = getWordDepth(word, startingNode);
         if (wordDepth === word.length) {
             validWords.addWord(word);
@@ -18,7 +18,7 @@ function getValidWords(allWords) {
 
 // Gets the depth of the graph created for a word
 function getWordDepth(word, startingNode) {
-    if (!(startingNode instanceof Node)) { return -1 }
+    if (!(startingNode instanceof LetterNode)) { return -1 }
     if (typeof word !== 'string') { return -1 }
     return getDepth(word, startingNode, 0);
 }
@@ -32,7 +32,7 @@ function getDepth(word, currentLetterNode, depth) {
     for (let i = 0; i < puzzle.length; i++) {
         const letter = puzzle[i];
         if (letterIsValidMove(letter, word, depth, currentLetterNode)) {
-            let newLetterNode = new Node(letter.id, depth, letter);
+            let newLetterNode = new LetterNode(letter.id, depth, letter);
             currentLetterNode.children.push(newLetterNode);
             let depthUnderNewLetterNode = getDepth(word, newLetterNode, depth + 1);
             maxDepthReached = Math.max(maxDepthReached, depthUnderNewLetterNode);
@@ -47,7 +47,7 @@ function letterIsValidMove(letter, word, depth, currentNode) {
     if (typeof word !== 'string') { return false }
     if (typeof depth !== 'number') { return false }
     if (depth < 0) { return false }
-    if (!(currentNode instanceof Node)) { return false }
+    if (!(currentNode instanceof LetterNode)) { return false }
     return letter.value === word[depth] && isValidMove(currentNode.id, letter.id);
 }
 

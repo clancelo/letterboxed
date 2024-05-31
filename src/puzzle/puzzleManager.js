@@ -4,6 +4,7 @@
  * are contained in this object.
  */
 class PuzzleLetter {
+
     /**
      * Builds a PuzzleLetter
      * @param {number} puzzleId - a value from 0-11 indicating the location in the puzzle
