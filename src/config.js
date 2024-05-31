@@ -15,9 +15,9 @@
 const config = {
     min_word_length: 3,
     max_word_length: 20,
-    puzzle_select: 1,
-    dict_select: 0,
-    will_sort: true,
+    puzzle_select: 4,
+    dict_select: 3,
+    will_sort: false,
     base_path: '',
     set_base_path: setBasePath,
     dict_path: getDictPath,
@@ -34,6 +34,10 @@ const config = {
         {
             name: 'az',
             value: './dictionaries/az.txt'
+        },
+        {
+            name: 'debug',
+            value: './dictionaries/debug.txt'
         }
     ]
 }

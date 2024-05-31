@@ -2,6 +2,9 @@ import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
 import { WordSet } from '../word/wordData.js'
 
+const MAX_SOLUTION_LENGTH = 5;
+const SOLUTION_BREADTH = 6;
+
 /**
  * Determines if the SolutionSet has reached its limit for solutions based on the current state of
  * the solution.
@@ -10,28 +13,48 @@ import { WordSet } from '../word/wordData.js'
  * @param {array} currentSeries - an array of words representing the current state of the solution
  * @returns 
  */
-function isBreadthLimitReached(solutionSet, currentSeries) {
-    if (solutionSet.allSolutions.length === 0) {
-    } else if (solutionSet.allSolutions.length > 18) { // TODO remove debug check
-        let base = 2;
-        let exponent = 4 - currentSeries.length;
-        let numAllowedRepeats = Math.pow(base, exponent);
-        let rangeEnd = solutionSet.allSolutions.length;
-        let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
-        let solutionRange = solutionSet.allSolutions.slice(rangeStart, rangeEnd)
-        let y = 1;
-        // do all values from currentSeries appear in solutionSet the maximum
-        // number of times? return true;
-        for (let i = 0; i < solutionRange.length - 1; i++) {
-            let currentSolution = currentSeries[currentSeries.length - 1];
-            // let currentSolution = solutionRange[i].solution[currentSeries.length - 1];
-            let nextSolution = solutionRange[i].solution[currentSeries.length - 1];
-            if (currentSolution !== nextSolution) {
+function isBreadthLimitReached(c, solutionSet, currentSeries) {
+    if (solutionSet.allSolutions.length === 0) { return false }
+    if (getNumAllowedRepeats(currentSeries) > solutionSet.allSolutions.length) { return false }
+    let solutionsToExamine = getSolutionsToExamine(solutionSet, currentSeries);
+    for (let sol = solutionsToExamine.length - 1; sol >= 0; sol--) {
+        for (let word = 0; word < currentSeries.length; word++) {
+            if (currentSeries[word] !== solutionsToExamine[sol].solution[word]) {
                 return false;
             }
         }
-        return true;
     }
+    return true;
+
+    // if (solutionSet.allSolutions.length === 0) {
+    // } else if (solutionSet.allSolutions.length > 18) { // TODO remove debug check
+    //     let solutionsToExamine = getSolutionsToExamine(solutionSet, currentSeries);
+    //     // do all values from currentSeries appear in solutionSet the maximum
+    //     // number of times? return true;
+    //     for (let i = 0; i < solutionsToExamine.length - 1; i++) {
+    //         let currentSolution = currentSeries[currentSeries.length - 1];
+    //         // let currentSolution = solutionRange[i].solution[currentSeries.length - 1];
+    //         let nextSolution = solutionsToExamine[i].solution[currentSeries.length - 1];
+    //         if (currentSolution !== nextSolution) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
+}
+
+function getSolutionsToExamine(solutionSet, currentSeries) {
+    let exponent = Math.max(0, SOLUTION_BREADTH - currentSeries.length);
+    let numAllowedRepeats = Math.pow(2, exponent);
+    let rangeEnd = solutionSet.allSolutions.length;
+    let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
+    let solutionRange = solutionSet.allSolutions.slice(rangeStart, rangeEnd);
+    return solutionRange;
+}
+
+function getNumAllowedRepeats(currentSeries) {
+    const exponent = Math.max(0, SOLUTION_BREADTH - currentSeries.length);
+    return Math.pow(2, exponent);
 }
 
 let solverConfig = {
@@ -45,6 +68,7 @@ function setBreadthLimits(breadth) {
 
 }
 
+
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
  * performed in the calling function.
@@ -55,33 +79,40 @@ function setBreadthLimits(breadth) {
  * @returns true if there are no more required letters, false otherwise
  */
 function solveWord(word, results, solutionSet, requiredLetters) {
-    if (solutionSet.currentSolution.length === 5 && requiredLetters.length !== 0) {
-        return false;
-    }
-    if (requiredLetters.length === 0) {
-        return true;
-    }
-    let lastLetter = word[word.length - 1];
-    let candidateWords = results.startsWith[lastLetter] || [];
-    if (candidateWords.length === 0) {
-        return false;
-    }
+    console.log(word);
+    console.log(solutionSet.currentSolution);
+    console.log(requiredLetters);
+    if (solutionSet.currentSolution.length > MAX_SOLUTION_LENGTH) { return false }
+    if (requiredLetters.length === 0) { return true }
+    const lastLetter = word[word.length - 1];
+    const candidateWords = results.startsWith[lastLetter] || []; // default to empty [] if no key
+    if (candidateWords.length === 0) { return false }
+    // At this point, the currentSolution is not beyond max, there are still required letters left
+    // to be used, and the candidateWords list still has options.
     for (let c = 0; c < candidateWords.length; c++) {
-
         let candidateWord = candidateWords[c];
+        console.log(`checking on candidate word: ${candidateWord}`)
         if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
-            if (isBreadthLimitReached(solutionSet, solutionSet.currentSolution.slice())) {
+            console.log("word uses required letter");
+            if (solutionSet.currentSolution.length === 2) {
+                console.log("")
+            }
+            if (isBreadthLimitReached(c, solutionSet, solutionSet.currentSolution.slice())) {
                 break;
             }
+            console.log(`${candidateWord} added`);
             solutionSet.currentSolution.push(candidateWord);
-            let newAvailableLetters = getNewRequiredLetters(candidateWord, requiredLetters);
-            if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
-                if (newAvailableLetters.length === 0) {
+            let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
+            if (solveWord(candidateWord, results, solutionSet, newRequiredLetters)) {
+                if (newRequiredLetters.length === 0) {
                     let solution = new Solution(solutionSet.currentSolution.slice(), solutionSet.currentSolution.length, getCharacterCount(solutionSet.currentSolution));
                     solutionSet.add(solution);
-                    console.log(solutionSet.currentSolution);
+                    if (solutionSet.allSolutions.length === 4) {
+                        console.log("")
+                    }
+                    console.log("------ SOLUTION added");
+                    // console.log(solutionSet.currentSolution);
                 }
-            } else {
             }
             solutionSet.currentSolution.pop();
         }
