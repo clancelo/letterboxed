@@ -81,4 +81,4 @@ function getPuzzleLetters() {
     return puzzle.map(letter => letter.value);
 }
 
-export { setPuzzle, getPuzzle, getPuzzleLetters };
+export { setPuzzle, getPuzzle, getPuzzleLetters, PuzzleLetter };

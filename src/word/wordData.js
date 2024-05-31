@@ -19,14 +19,14 @@ class LetterNode {
     }
 
     /**
-     * Prints the letter graph below this Node
+     * Prints the letter graph below this Node.
      */
     print() {
         this.#printIterative();
     }
 
     /**
-     * Prints recursivelt the letter graph below this Node
+     * Prints recursivelt the letter graph below this Node.
      */
     #printRecursive(node, indentLevel) {
         console.log(' '.repeat(indentLevel * 4) + node.letter);
@@ -36,7 +36,7 @@ class LetterNode {
     }
 
     /**
-     * Prints iteratively the letter graph below this Node
+     * Prints iteratively the letter graph below this Node.
      */
     #printIterative() {
         let stack = [this];
@@ -61,7 +61,7 @@ class LetterNode {
  */
 class WordSet {
     /**
-     * Builds a WordSet object
+     * Builds a WordSet object.
      */
     constructor() {
         this.allWords = {};
