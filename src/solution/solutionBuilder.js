@@ -2,8 +2,6 @@ import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
 import { WordSet } from '../word/wordData.js'
 
-let series = [];
-
 /**
  * Determines if the SolutionSet has reached its limit for solutions based on the current state of
  * the solution.
@@ -36,6 +34,17 @@ function isBreadthLimitReached(solutionSet, currentSeries) {
     }
 }
 
+let solverConfig = {
+    base: 0,
+    exponent: 0,
+    maxSolutionLength: 0,
+
+}
+
+function setBreadthLimits(breadth) {
+
+}
+
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
  * performed in the calling function.
@@ -46,7 +55,7 @@ function isBreadthLimitReached(solutionSet, currentSeries) {
  * @returns true if there are no more required letters, false otherwise
  */
 function solveWord(word, results, solutionSet, requiredLetters) {
-    if (series.length === 5 && requiredLetters.length !== 0) {
+    if (solutionSet.currentSolution.length === 5 && requiredLetters.length !== 0) {
         return false;
     }
     if (requiredLetters.length === 0) {
@@ -61,21 +70,20 @@ function solveWord(word, results, solutionSet, requiredLetters) {
 
         let candidateWord = candidateWords[c];
         if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
-            if (isBreadthLimitReached(solutionSet, series.slice())) {
+            if (isBreadthLimitReached(solutionSet, solutionSet.currentSolution.slice())) {
                 break;
             }
-            series.push(candidateWord);
+            solutionSet.currentSolution.push(candidateWord);
             let newAvailableLetters = getNewRequiredLetters(candidateWord, requiredLetters);
             if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
                 if (newAvailableLetters.length === 0) {
-                    let solution = new Solution(series.slice(), series.length, getCharacterCount(series));
+                    let solution = new Solution(solutionSet.currentSolution.slice(), solutionSet.currentSolution.length, getCharacterCount(solutionSet.currentSolution));
                     solutionSet.add(solution);
-                    console.log(series);
+                    console.log(solutionSet.currentSolution);
                 }
             } else {
-                // console.log(series)
             }
-            series.pop();
+            solutionSet.currentSolution.pop();
         }
     }
     return false;
@@ -90,18 +98,16 @@ function solveWord(word, results, solutionSet, requiredLetters) {
 function getSolutions(validWordSet, willSort) {
     if (!(validWordSet instanceof WordSet)) { return new SolutionSet() }
     if (typeof willSort !== 'boolean') { return new SolutionSet() }
-    let words = validWordSet.getWords();
-    let requiredLetters = getPuzzleLetters();
-    let solutionSet = new SolutionSet();
-    for (let i = 0; i < words.length; i++) {
-        let candidateWord = words[i];
-        series.push(candidateWord);
-        let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
-        solveWord(candidateWord, validWordSet, solutionSet, newRequiredLetters);
-        series.pop();
+    let allValidWords = validWordSet.getWords();
+    let solutions = new SolutionSet();
+    for (let i = 0; i < allValidWords.length; i++) {
+        solutions.currentSolution.push(allValidWords[i]);
+        let newRequiredLetters = getNewRequiredLetters(allValidWords[i], getPuzzleLetters());
+        solveWord(allValidWords[i], validWordSet, solutions, newRequiredLetters);
+        solutions.currentSolution.pop();
     }
-    if (willSort) { solutionSet.sort() }
-    return solutionSet;
+    if (willSort) { solutions.sort() }
+    return solutions;
 }
 
 /**
@@ -152,4 +158,4 @@ function getCharacterCount(solution) {
     return solution.join('').length;
 }
 
-export { getSolutions };
+export { getSolutions, setBreadthLimits };
