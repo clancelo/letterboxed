@@ -13,7 +13,7 @@ const SOLUTION_BREADTH = 6;
  * @param {array} currentSeries - an array of words representing the current state of the solution
  * @returns 
  */
-function isBreadthLimitReached(c, solutionSet, currentSeries) {
+function isBreadthLimitReached_old(c, solutionSet, currentSeries) {
     if (solutionSet.allSolutions.length === 0) { return false }
     if (getNumAllowedRepeats(currentSeries) > solutionSet.allSolutions.length) { return false }
     let solutionsToExamine = getSolutionsToExamine(solutionSet, currentSeries);
@@ -68,6 +68,52 @@ function setBreadthLimits(breadth) {
 
 }
 
+let breadthLimiter = {
+    counts: new Array(MAX_SOLUTION_LENGTH).fill(0),
+    limitIndex: -1
+}
+
+
+function isBreadthLimitReached() {
+    if (flagA > 0) {
+        flagA--;
+        return true;
+    }
+    return false;
+}
+
+//TODO account for different length solutions (b can go out of bounds here)
+function updateBreadthLimiter(solutionSet) {
+    // if (solutionSet.allSolutions.length === 2) {
+    //     flagA++;
+    // }
+    // if (solutionSet.allSolutions.length === 5) {
+    //     flagA++;
+    //     flagA++;
+    // }
+    breadthLimiter.counts = new Array(MAX_SOLUTION_LENGTH).fill(0);
+    for (let sol = solutionSet.allSolutions.length - 1; sol >= Math.max(0, solutionSet.allSolutions.length - 32); sol--) {
+        for (let b = 0; b < breadthLimiter.counts.length; b++) {
+            if (solutionSet.allSolutions[sol].solution[b] === solutionSet.allSolutions[Math.max(0, sol - 1)].solution[b]) {
+                breadthLimiter.counts[b] = breadthLimiter.counts[b] + 1;
+            } else {
+                breadthLimiter.counts[b] = 0;
+            }
+        }
+    }
+    // if (breadthLimiter.counts[0] >= 2) {
+    //     flagA = 3;
+    // }
+    for (let b = breadthLimiter.counts.length - 1; b >= 0; b--) {
+        if (breadthLimiter.counts[b] >= Math.pow(2, breadthLimiter.counts.length - b)) {
+            flagA = breadthLimiter.counts.length - b - 1;
+        }
+        if (flagA > 0) {
+            breadthLimiter.counts = new Array(MAX_SOLUTION_LENGTH).fill(0);
+        }
+    }
+}
+
 let flagA = 0;
 let flagB = 0;
 /**
@@ -80,39 +126,24 @@ let flagB = 0;
  * @returns true if there are no more required letters, false otherwise
  */
 function solveWord(word, results, solutionSet, requiredLetters) {
+    // console.log(breadthLimiter)
     if (solutionSet.currentSolution.length > MAX_SOLUTION_LENGTH) { return false }
     if (requiredLetters.length === 0) { return true }
     const lastLetter = word[word.length - 1];
     const candidateWords = results.startsWith[lastLetter] || []; // default to empty [] if no key
     if (candidateWords.length === 0) { return false }
-    // At this point, the currentSolution is not beyond max, there are still required letters left
-    // to be used, and the candidateWords list still has options.
     for (let c = 0; c < candidateWords.length; c++) {
         let candidateWord = candidateWords[c];
         if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
-            // if (isBreadthLimitReached(c, solutionSet, solutionSet.currentSolution.slice())) {
-            //     break;
-            // }
             solutionSet.currentSolution.push(candidateWord);
             let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
             if (solveWord(candidateWord, results, solutionSet, newRequiredLetters)) {
-                let solution = new Solution(solutionSet.currentSolution.slice(), solutionSet.currentSolution.length, getCharacterCount(solutionSet.currentSolution));
+                let solution = new Solution(solutionSet.currentSolution);
                 solutionSet.add(solution);
                 console.log(solution.solution);
                 updateBreadthLimiter(solutionSet);
-                if (solutionSet.allSolutions.length === 2) {
-                    flagA++;
-                }
-                if (solutionSet.allSolutions.length === 5) {
-                    flagA++;
-                    flagA++;
-                }
             }
             solutionSet.currentSolution.pop();
-        }
-        if (flagA > 0) {
-            flagA--;
-            break;
         }
         if (isBreadthLimitReached()) {
             break;
@@ -121,13 +152,6 @@ function solveWord(word, results, solutionSet, requiredLetters) {
     return false;
 }
 
-function isBreadthLimitReached() {
-    return false;
-}
-
-function isBreadthLimitReached() {
-    return false;
-}
 
 /**
  * Generates a SolutionSet for a given WordSet.
@@ -185,17 +209,6 @@ function getNewRequiredLetters(word, requiredLetters) {
         }
     }
     return Array.from(newRequiredLetters);
-}
-
-/**
- * Returns the number of characters in a solution.
- * TODO data type
- * @param {array} solution - the solution to count
- * @returns the number of characters in the solution
- */
-function getCharacterCount(solution) {
-    if (!Array.isArray(solution)) { return 0 }
-    return solution.join('').length;
 }
 
 export { getSolutions, setBreadthLimits };

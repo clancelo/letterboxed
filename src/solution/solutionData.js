@@ -45,15 +45,14 @@ class Solution {
 
     /**
      * Builds a Solution.
+     * //TODO input validation
      * @param {array} solution - an array of words representing a solution to the puzzle
-     * @param {number} wordCount - the number of words in the solution
-     * @param {number} characterCount - the number of characters in the solution
      */
-    constructor(solution, wordCount, characterCount) {
-        this.solution = solution;
-        this.wordCount = wordCount;
-        this.characterCount = characterCount;
-        this.rating = wordCount * characterCount;
+    constructor(solution) {
+        this.solution = solution.slice();
+        this.wordCount = solution.length;
+        this.characterCount = getCharacterCount(solution);
+        this.rating = this.wordCount * this.characterCount;
     }
 
     /**
@@ -67,6 +66,17 @@ class Solution {
             this.solution;
     }
 
+}
+
+/**
+ * Returns the number of characters in a solution.
+ * TODO data type
+ * @param {array} solution - the solution to count
+ * @returns the number of characters in the solution
+ */
+function getCharacterCount(solution) {
+    if (!Array.isArray(solution)) { return 0 }
+    return solution.join('').length;
 }
 
 export { Solution, SolutionSet };
