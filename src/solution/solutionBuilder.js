@@ -68,7 +68,8 @@ function setBreadthLimits(breadth) {
 
 }
 
-
+let flagA = 0;
+let flagB = 0;
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
  * performed in the calling function.
@@ -79,9 +80,6 @@ function setBreadthLimits(breadth) {
  * @returns true if there are no more required letters, false otherwise
  */
 function solveWord(word, results, solutionSet, requiredLetters) {
-    console.log(word);
-    console.log(solutionSet.currentSolution);
-    console.log(requiredLetters);
     if (solutionSet.currentSolution.length > MAX_SOLUTION_LENGTH) { return false }
     if (requiredLetters.length === 0) { return true }
     const lastLetter = word[word.length - 1];
@@ -91,32 +89,43 @@ function solveWord(word, results, solutionSet, requiredLetters) {
     // to be used, and the candidateWords list still has options.
     for (let c = 0; c < candidateWords.length; c++) {
         let candidateWord = candidateWords[c];
-        console.log(`checking on candidate word: ${candidateWord}`)
         if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
-            console.log("word uses required letter");
-            if (solutionSet.currentSolution.length === 2) {
-                console.log("")
-            }
-            if (isBreadthLimitReached(c, solutionSet, solutionSet.currentSolution.slice())) {
-                break;
-            }
-            console.log(`${candidateWord} added`);
+            // if (isBreadthLimitReached(c, solutionSet, solutionSet.currentSolution.slice())) {
+            //     break;
+            // }
             solutionSet.currentSolution.push(candidateWord);
             let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
             if (solveWord(candidateWord, results, solutionSet, newRequiredLetters)) {
-                if (newRequiredLetters.length === 0) {
-                    let solution = new Solution(solutionSet.currentSolution.slice(), solutionSet.currentSolution.length, getCharacterCount(solutionSet.currentSolution));
-                    solutionSet.add(solution);
-                    if (solutionSet.allSolutions.length === 4) {
-                        console.log("")
-                    }
-                    console.log("------ SOLUTION added");
-                    // console.log(solutionSet.currentSolution);
+                let solution = new Solution(solutionSet.currentSolution.slice(), solutionSet.currentSolution.length, getCharacterCount(solutionSet.currentSolution));
+                solutionSet.add(solution);
+                console.log(solution.solution);
+                updateBreadthLimiter(solutionSet);
+                if (solutionSet.allSolutions.length === 2) {
+                    flagA++;
+                }
+                if (solutionSet.allSolutions.length === 5) {
+                    flagA++;
+                    flagA++;
                 }
             }
             solutionSet.currentSolution.pop();
         }
+        if (flagA > 0) {
+            flagA--;
+            break;
+        }
+        if (isBreadthLimitReached()) {
+            break;
+        }
     }
+    return false;
+}
+
+function isBreadthLimitReached() {
+    return false;
+}
+
+function isBreadthLimitReached() {
     return false;
 }
 
