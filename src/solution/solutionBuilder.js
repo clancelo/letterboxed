@@ -2,8 +2,20 @@ import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
 import { WordSet } from '../word/wordData.js'
 
+//TODO account for different length solutions (b can go out of bounds here)
+
 const MAX_SOLUTION_LENGTH = 5;
 const SOLUTION_BREADTH = 6;
+
+let solverConfig = {
+    base: 0,
+    exponent: 0,
+    maxSolutionLength: 0,
+
+}
+
+let flagA = 0;
+let flagB = 0;
 
 /**
  * Determines if the SolutionSet has reached its limit for solutions based on the current state of
@@ -57,65 +69,86 @@ function getNumAllowedRepeats(currentSeries) {
     return Math.pow(2, exponent);
 }
 
-let solverConfig = {
-    base: 0,
-    exponent: 0,
-    maxSolutionLength: 0,
-
-}
 
 function setBreadthLimits(breadth) {
 
 }
 
-let breadthLimiter = {
-    counts: new Array(MAX_SOLUTION_LENGTH).fill(0),
-    limitIndex: -1
+class BreadthLimiter {
+    constructor() {
+        this.counts = new Array(MAX_SOLUTION_LENGTH).fill(1)
+        this.limitLevel = 0;
+    }
+    incrementCount(wordIndex) {
+        this.counts[wordIndex]++;
+    }
+    setLimit(limitLevel) {
+        this.limitLevel = limitLevel;
+    }
+    decrementLimit() {
+        this.limitLevel--;
+    }
+    clearCount(wordIndex) {
+        this.counts[wordIndex] = 1;
+    }
+    clearAllCounts() {
+        for (let i = 0; i < this.counts.length; i++) {
+            this.counts[i] = 1;
+        }
+    }
+    getLimit() {
+        return this.limitLevel;
+    }
+    getCount(wordIndex) {
+        return this.counts[wordIndex];
+    }
+    getLength() {
+        return MAX_SOLUTION_LENGTH;
+    }
 }
 
+let breadthLimiter = new BreadthLimiter();
+
+// let breadthLimiter = {
+//     counts: new Array(MAX_SOLUTION_LENGTH).fill(0),
+//     limitIndex: -1,
+//     reset: function () {
+
+//     }
+
+// }
 
 function isBreadthLimitReached() {
-    if (flagA > 0) {
-        flagA--;
+    if (breadthLimiter.getLimit() > 0) {
+        breadthLimiter.decrementLimit();
         return true;
     }
     return false;
 }
 
-//TODO account for different length solutions (b can go out of bounds here)
 function updateBreadthLimiter(solutionSet) {
-    // if (solutionSet.allSolutions.length === 2) {
-    //     flagA++;
-    // }
-    // if (solutionSet.allSolutions.length === 5) {
-    //     flagA++;
-    //     flagA++;
-    // }
-    breadthLimiter.counts = new Array(MAX_SOLUTION_LENGTH).fill(0);
-    for (let sol = solutionSet.allSolutions.length - 1; sol >= Math.max(0, solutionSet.allSolutions.length - 32); sol--) {
-        for (let b = 0; b < breadthLimiter.counts.length; b++) {
-            if (solutionSet.allSolutions[sol].solution[b] === solutionSet.allSolutions[Math.max(0, sol - 1)].solution[b]) {
-                breadthLimiter.counts[b] = breadthLimiter.counts[b] + 1;
-            } else {
-                breadthLimiter.counts[b] = 0;
+    if (solutionSet.count <= 1) { return }
+    let previousSolution = solutionSet.allSolutions[solutionSet.count - 2].solution;
+    let currentSolution = solutionSet.allSolutions[solutionSet.count - 1].solution;
+    for (let b = 0; b < breadthLimiter.getLength(); b++) {
+        if (previousSolution[b] === currentSolution[b]) {
+            breadthLimiter.incrementCount(b);
+        }
+        else {
+            for (let c = b; c < breadthLimiter.getLength(); c++) {
+                breadthLimiter.clearCount(c);
             }
         }
-    }
-    // if (breadthLimiter.counts[0] >= 2) {
-    //     flagA = 3;
-    // }
-    for (let b = breadthLimiter.counts.length - 1; b >= 0; b--) {
-        if (breadthLimiter.counts[b] >= Math.pow(2, breadthLimiter.counts.length - b)) {
-            flagA = breadthLimiter.counts.length - b - 1;
-        }
-        if (flagA > 0) {
-            breadthLimiter.counts = new Array(MAX_SOLUTION_LENGTH).fill(0);
+        if (breadthLimiter.getCount(b) >= Math.pow(2, breadthLimiter.getLength() - b)) {
+            breadthLimiter.setLimit(breadthLimiter.getLength() - b - 1);
+            //breadthLimiter.clearAllCounts();
+            break;
         }
     }
 }
 
-let flagA = 0;
-let flagB = 0;
+function getNumberOfRepeats() { }
+
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
  * performed in the calling function.

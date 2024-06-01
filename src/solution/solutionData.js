@@ -9,6 +9,7 @@ class SolutionSet {
     constructor() {
         this.currentSolution = [];
         this.allSolutions = [];
+        this.count = 0;
     }
 
     /**
@@ -17,6 +18,7 @@ class SolutionSet {
      */
     add(solution) {
         this.allSolutions.push(solution);
+        this.count++;
     }
 
     /**

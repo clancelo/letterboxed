@@ -15,9 +15,9 @@
 const config = {
     min_word_length: 3,
     max_word_length: 20,
-    puzzle_select: 4,
-    dict_select: 3,
-    will_sort: false,
+    puzzle_select: 0,
+    dict_select: 2,
+    will_sort: true,
     base_path: '',
     set_base_path: setBasePath,
     dict_path: getDictPath,
