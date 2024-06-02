@@ -1,6 +1,6 @@
 import { readFile, writeSolutionsToFile } from './file/fileManager.js'
 import { getValidWords } from './word/wordBuilder.js'
-import { getSolutions, setBreadthLimits } from './solution/solutionBuilder.js'
+import { getSolutions } from './solution/solutionBuilder.js'
 import { config } from './config.js'
 import { setPuzzle } from './puzzle/puzzleManager.js'
 import { fileURLToPath } from 'url';
@@ -17,7 +17,7 @@ config.set_base_path(__dirname);
 setPuzzle(config.puzzle_select);
 
 // Configure solver
-setBreadthLimits(config.breadth);
+
 
 // Read dictionary
 const allWordsFromDictionary = readFile(config.base_path, config.dict_path(), config.min_word_length, config.max_word_length);

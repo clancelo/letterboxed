@@ -15,6 +15,7 @@
 const config = {
     min_word_length: 3,
     max_word_length: 20,
+    max_solution_length: 5,
     puzzle_select: 0,
     dict_select: 2,
     will_sort: true,

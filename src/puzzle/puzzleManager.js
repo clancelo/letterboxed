@@ -41,6 +41,8 @@ function buildPuzzle(puzzleString) {
 const puzzleManager = {
     currentPuzzleIndex: 0,
     archive: [
+        buildPuzzle('ARNPDCUIMTLO'),
+        buildPuzzle('AERUCTSYIQLV'),
         buildPuzzle('TKLUAINYEBZH'),
         buildPuzzle('NEUICKWRPTAL'),
         buildPuzzle('AUEVCNRIOGLF'),

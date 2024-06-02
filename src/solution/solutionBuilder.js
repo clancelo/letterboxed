@@ -1,153 +1,10 @@
 import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
+// import { updateBreadthLimiter, isBreadthLimitReached } from './breadthLimiter.js'
+import { breadthLimiter } from './breadthLimiter.js'
 import { WordSet } from '../word/wordData.js'
 
-//TODO account for different length solutions (b can go out of bounds here)
-
 const MAX_SOLUTION_LENGTH = 5;
-const SOLUTION_BREADTH = 6;
-
-let solverConfig = {
-    base: 0,
-    exponent: 0,
-    maxSolutionLength: 0,
-
-}
-
-let flagA = 0;
-let flagB = 0;
-
-/**
- * Determines if the SolutionSet has reached its limit for solutions based on the current state of
- * the solution.
- * // TODO detail this function
- * @param {SolutionSet} solutionSet - the SolutionSet being examined for a breadth limit
- * @param {array} currentSeries - an array of words representing the current state of the solution
- * @returns 
- */
-function isBreadthLimitReached_old(c, solutionSet, currentSeries) {
-    if (solutionSet.allSolutions.length === 0) { return false }
-    if (getNumAllowedRepeats(currentSeries) > solutionSet.allSolutions.length) { return false }
-    let solutionsToExamine = getSolutionsToExamine(solutionSet, currentSeries);
-    for (let sol = solutionsToExamine.length - 1; sol >= 0; sol--) {
-        for (let word = 0; word < currentSeries.length; word++) {
-            if (currentSeries[word] !== solutionsToExamine[sol].solution[word]) {
-                return false;
-            }
-        }
-    }
-    return true;
-
-    // if (solutionSet.allSolutions.length === 0) {
-    // } else if (solutionSet.allSolutions.length > 18) { // TODO remove debug check
-    //     let solutionsToExamine = getSolutionsToExamine(solutionSet, currentSeries);
-    //     // do all values from currentSeries appear in solutionSet the maximum
-    //     // number of times? return true;
-    //     for (let i = 0; i < solutionsToExamine.length - 1; i++) {
-    //         let currentSolution = currentSeries[currentSeries.length - 1];
-    //         // let currentSolution = solutionRange[i].solution[currentSeries.length - 1];
-    //         let nextSolution = solutionsToExamine[i].solution[currentSeries.length - 1];
-    //         if (currentSolution !== nextSolution) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-}
-
-function getSolutionsToExamine(solutionSet, currentSeries) {
-    let exponent = Math.max(0, SOLUTION_BREADTH - currentSeries.length);
-    let numAllowedRepeats = Math.pow(2, exponent);
-    let rangeEnd = solutionSet.allSolutions.length;
-    let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
-    let solutionRange = solutionSet.allSolutions.slice(rangeStart, rangeEnd);
-    return solutionRange;
-}
-
-function getNumAllowedRepeats(currentSeries) {
-    const exponent = Math.max(0, SOLUTION_BREADTH - currentSeries.length);
-    return Math.pow(2, exponent);
-}
-
-
-function setBreadthLimits(breadth) {
-
-}
-
-class BreadthLimiter {
-    constructor() {
-        this.counts = new Array(MAX_SOLUTION_LENGTH).fill(1)
-        this.limitLevel = 0;
-    }
-    incrementCount(wordIndex) {
-        this.counts[wordIndex]++;
-    }
-    setLimit(limitLevel) {
-        this.limitLevel = limitLevel;
-    }
-    decrementLimit() {
-        this.limitLevel--;
-    }
-    clearCount(wordIndex) {
-        this.counts[wordIndex] = 1;
-    }
-    clearAllCounts() {
-        for (let i = 0; i < this.counts.length; i++) {
-            this.counts[i] = 1;
-        }
-    }
-    getLimit() {
-        return this.limitLevel;
-    }
-    getCount(wordIndex) {
-        return this.counts[wordIndex];
-    }
-    getLength() {
-        return MAX_SOLUTION_LENGTH;
-    }
-}
-
-let breadthLimiter = new BreadthLimiter();
-
-// let breadthLimiter = {
-//     counts: new Array(MAX_SOLUTION_LENGTH).fill(0),
-//     limitIndex: -1,
-//     reset: function () {
-
-//     }
-
-// }
-
-function isBreadthLimitReached() {
-    if (breadthLimiter.getLimit() > 0) {
-        breadthLimiter.decrementLimit();
-        return true;
-    }
-    return false;
-}
-
-function updateBreadthLimiter(solutionSet) {
-    if (solutionSet.count <= 1) { return }
-    let previousSolution = solutionSet.allSolutions[solutionSet.count - 2].solution;
-    let currentSolution = solutionSet.allSolutions[solutionSet.count - 1].solution;
-    for (let b = 0; b < breadthLimiter.getLength(); b++) {
-        if (previousSolution[b] === currentSolution[b]) {
-            breadthLimiter.incrementCount(b);
-        }
-        else {
-            for (let c = b; c < breadthLimiter.getLength(); c++) {
-                breadthLimiter.clearCount(c);
-            }
-        }
-        if (breadthLimiter.getCount(b) >= Math.pow(2, breadthLimiter.getLength() - b)) {
-            breadthLimiter.setLimit(breadthLimiter.getLength() - b - 1);
-            //breadthLimiter.clearAllCounts();
-            break;
-        }
-    }
-}
-
-function getNumberOfRepeats() { }
 
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
@@ -159,7 +16,6 @@ function getNumberOfRepeats() { }
  * @returns true if there are no more required letters, false otherwise
  */
 function solveWord(word, results, solutionSet, requiredLetters) {
-    // console.log(breadthLimiter)
     if (solutionSet.currentSolution.length > MAX_SOLUTION_LENGTH) { return false }
     if (requiredLetters.length === 0) { return true }
     const lastLetter = word[word.length - 1];
@@ -174,11 +30,11 @@ function solveWord(word, results, solutionSet, requiredLetters) {
                 let solution = new Solution(solutionSet.currentSolution);
                 solutionSet.add(solution);
                 console.log(solution.solution);
-                updateBreadthLimiter(solutionSet);
+                breadthLimiter.update(solutionSet);
             }
             solutionSet.currentSolution.pop();
         }
-        if (isBreadthLimitReached()) {
+        if (breadthLimiter.hasReachedLimit()) {
             break;
         }
     }
@@ -244,4 +100,4 @@ function getNewRequiredLetters(word, requiredLetters) {
     return Array.from(newRequiredLetters);
 }
 
-export { getSolutions, setBreadthLimits };
+export { getSolutions };
