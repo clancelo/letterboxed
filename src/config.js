@@ -19,11 +19,13 @@
 const config = {
     will_sort: true,
     will_limit: true,
+    silence_all_output: false,
+    silence_progress_output: false,
     min_word_length: 3,
     max_word_length: 20,
     max_solution_length: 5,
     solution_breadth: 0,
-    puzzle_select: 2,
+    puzzle_select: 0,
     dict_select: 2,
     dict: [
         {

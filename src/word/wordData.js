@@ -1,3 +1,5 @@
+import { Log } from '../logger.js'
+
 /**
  * An n-graph node that holds puzzle-id, letter, and graph depth. The id is the location within the
  * puzzle, the letter is the letter at that location, and the depth is the zero-indexed depth into
@@ -29,7 +31,7 @@ class LetterNode {
      * Prints recursivelt the letter graph below this Node.
      */
     printRecursive(node, indentLevel) {
-        console.log(' '.repeat(indentLevel * 4) + node.letter);
+        Log.log(' '.repeat(indentLevel * 4) + node.letter);
         for (let i = 0; i < node.children.length; i++) {
             this.printRecursive(node.children[i], indentLevel + 1);
         }
@@ -42,7 +44,7 @@ class LetterNode {
         let stack = [this];
         while (stack.length > 0) {
             let currentNode = stack.pop();
-            console.log(currentNode.letter)
+            Log.log(currentNode.letter)
             for (let i = currentNode.children.length - 1; i >= 0; i--) {
                 stack.push(currentNode.children[i]);
             }
@@ -86,7 +88,6 @@ class WordSet {
     addWord(word) {
         if (typeof word !== 'string') { return false };
         if (word.length === 0) { return false };
-        if (this.wordHasInvalidCharacters(word)) { return false };
         const firstLetter = word[0];
         const lastLetter = word[word.length - 1];
         const wordRating = this.getWordRating(word);
@@ -121,16 +122,6 @@ class WordSet {
     getWordRating(word) {
         if (typeof word !== 'string') { return 0 };
         return new Set(word).size;
-    }
-
-    /**
-     * Returns whether a word has at least 1 invalid character
-     * @param {string} word - the word being validated
-     * @returns 
-     */
-    wordHasInvalidCharacters(word) {
-        //TODO implement
-        return false
     }
 
 }

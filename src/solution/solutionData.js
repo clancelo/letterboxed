@@ -47,10 +47,10 @@ class Solution {
 
     /**
      * Builds a Solution.
-     * //TODO input validation
      * @param {array} solution - an array of words representing a solution to the puzzle
      */
     constructor(solution) {
+        if (!Array.isArray(solution)) { solution = [] }
         this.solution = solution.slice();
         this.wordCount = solution.length;
         this.characterCount = getCharacterCount(solution);
@@ -72,12 +72,10 @@ class Solution {
 
 /**
  * Returns the number of characters in a solution.
- * TODO data type
  * @param {array} solution - the solution to count
  * @returns the number of characters in the solution
  */
 function getCharacterCount(solution) {
-    if (!Array.isArray(solution)) { return 0 }
     return solution.join('').length;
 }
 

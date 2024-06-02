@@ -2,27 +2,36 @@ import { readFile, writeSolutionsToFile } from './file/fileManager.js'
 import { getValidWords } from './word/wordBuilder.js'
 import { getSolutions } from './solution/solutionBuilder.js'
 import { config } from './config.js'
+import { Log } from './logger.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-//TODO: validate config
+Log.programStart();
+
+// Validate config
+//TODO: Validate config
+//TODO: Configure systems to remove their access to config
 
 // Configure directory
+Log.phaseStart("Configuration");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 config.set_base_path(__dirname);
-console.log("Configuration, Success");
+Log.phaseEnd(true);
 
 // Prepare for solutions
+Log.phaseStart("Input");
 const allWordsFromDictionary = readFile(config.base_path, config.dict_path(), config.min_word_length, config.max_word_length);
 const validPuzzleWords = getValidWords(allWordsFromDictionary);
-console.log("Input, Success");
+Log.phaseEnd(true);
 
 // Solve Puzzle
+Log.phaseStart("Solutions");
 const puzzleSolutions = getSolutions(validPuzzleWords, config.will_sort);
-console.log("Solutions, Success");
+Log.phaseEnd(true);
 
 // Output solutions
+Log.phaseStart("Output");
 writeSolutionsToFile(puzzleSolutions.allSolutions, config.base_path, config.solution_path);
-console.log("Output, Success");
-console.log(`Solutions Count: ${puzzleSolutions.allSolutions.length}`);
+Log.phaseEnd(true);
+Log.programEnd(puzzleSolutions);

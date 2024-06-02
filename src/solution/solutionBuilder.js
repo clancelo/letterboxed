@@ -3,43 +3,52 @@ import { SolutionSet, Solution } from './solutionData.js'
 import { breadthLimiter } from './breadthLimiter.js'
 import { WordSet } from '../word/wordData.js'
 import { config } from '../config.js'
-
+import { Log } from '../logger.js'
 
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
  * performed in the calling function.
  * @param {string} word - the word being solved
- * @param {ResultSet} results - the ResultSet of the word search for the puzzle
+ * @param {WordSet} wordSet - the WordSet of the word search for the puzzle
  * @param {SolutionSet} solutionSet - the SolutionSet being populated
  * @param {array} requiredLetters - an array of required letters 
  * @returns true if there are no more required letters, false otherwise
  */
-function solveWord(word, results, solutionSet, requiredLetters) {
+function solveWord(word, wordSet, solutionSet, requiredLetters) {
     if (solutionSet.currentSolution.length > config.max_solution_length) { return false }
     if (requiredLetters.length === 0) { return true }
     const lastLetter = word[word.length - 1];
-    const candidateWords = results.startsWith[lastLetter] || []; // default to empty [] if no key
+    const candidateWords = wordSet.startsWith[lastLetter] ?? []; // default to empty [] if no key
     if (candidateWords.length === 0) { return false }
     for (let c = 0; c < candidateWords.length; c++) {
-        let candidateWord = candidateWords[c];
-        if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
-            solutionSet.currentSolution.push(candidateWord);
-            let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
-            if (solveWord(candidateWord, results, solutionSet, newRequiredLetters)) {
-                let solution = new Solution(solutionSet.currentSolution);
-                solutionSet.add(solution);
-                breadthLimiter.update(solutionSet);
-            }
-            solutionSet.currentSolution.pop();
-        }
+        processCandidateWord(candidateWords[c], wordSet, solutionSet, requiredLetters);
         if (breadthLimiter.hasReachedLimit()) {
             break;
         }
-
     }
     return false;
 }
 
+/**
+ * Processes a candidate word by checking if it uses any required letters and updating the solution
+ * set. This function is called recursively by solveWord to explore possible solutions.
+ * @param {string} candidateWord - the candidate word to be processed
+ * @param {WordSet} wordSet - the WordSet containing words for the puzzle
+ * @param {SolutionSet} solutionSet - the SolutionSet being populated
+ * @param {array} requiredLetters - an array of required letters
+ */
+function processCandidateWord(candidateWord, wordSet, solutionSet, requiredLetters) {
+    if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
+        solutionSet.currentSolution.push(candidateWord);
+        let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
+        if (solveWord(candidateWord, wordSet, solutionSet, newRequiredLetters)) {
+            let solution = new Solution(solutionSet.currentSolution);
+            solutionSet.add(solution);
+            breadthLimiter.update(solutionSet);
+        }
+        solutionSet.currentSolution.pop();
+    }
+}
 
 /**
  * Generates a SolutionSet for a given WordSet.
@@ -53,7 +62,7 @@ function getSolutions(validWordSet, willSort) {
     let allValidWords = validWordSet.getWords();
     let solutions = new SolutionSet();
     for (let i = 0; i < allValidWords.length; i++) {
-        console.log(i / allValidWords.length);
+        Log.outputProgress(i, allValidWords.length);
         solutions.currentSolution.push(allValidWords[i]);
         let newRequiredLetters = getNewRequiredLetters(allValidWords[i], getPuzzleLetters());
         solveWord(allValidWords[i], validWordSet, solutions, newRequiredLetters);
