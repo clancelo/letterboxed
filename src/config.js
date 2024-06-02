@@ -17,13 +17,13 @@
  *  length = 4, breadth = -1
  */
 const config = {
-    will_sort: false,
+    will_sort: true,
     will_limit: true,
     min_word_length: 3,
     max_word_length: 20,
     max_solution_length: 5,
     solution_breadth: 0,
-    puzzle_select: 0,
+    puzzle_select: 2,
     dict_select: 2,
     dict: [
         {

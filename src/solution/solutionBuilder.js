@@ -1,6 +1,5 @@
 import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
-// import { updateBreadthLimiter, isBreadthLimitReached } from './breadthLimiter.js'
 import { breadthLimiter } from './breadthLimiter.js'
 import { WordSet } from '../word/wordData.js'
 import { config } from '../config.js'

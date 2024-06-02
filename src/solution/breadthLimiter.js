@@ -1,17 +1,34 @@
 import { SolutionSet } from './solutionData.js'
 import { config } from '../config.js'
-//TODO account for different length solutions (b can go out of bounds here)
 
-let SOLUTION_BREADTH = 0;
-
+/**
+ * Handles tracking the breadth of the solution space. Each index in the solution is monitored
+ * according for repeated sequences and the solution space is truncated when necessary. 
+ */
 class BreadthLimiter {
+
+    /**
+     * Builds a BreadthLimiter. The counts array holds the number of times each index has repeated.
+     * The limitLevel value represents how far into the current working solution the limiter needs
+     * to effect.
+     */
     constructor() {
         this.counts = new Array(config.max_solution_length).fill(1);
         this.limitLevel = 0;
     }
+
+    /**
+     * Increments the count for a specific index, indicating that the index has repeated.
+     * @param {number} wordIndex - the index at which count needs to be incremented
+     */
     incrementCount(wordIndex) {
         this.counts[wordIndex]++;
     }
+
+    /**
+     * 
+     * @param {number} limitLevel 
+     */
     setLimit(limitLevel) {
         this.limitLevel = limitLevel;
     }
@@ -20,11 +37,6 @@ class BreadthLimiter {
     }
     clearCount(wordIndex) {
         this.counts[wordIndex] = 1;
-    }
-    clearAllCounts() {
-        for (let i = 0; i < this.counts.length; i++) {
-            this.counts[i] = 1;
-        }
     }
     getLimit() {
         return this.limitLevel;
@@ -40,7 +52,6 @@ class BreadthLimiter {
 /**
  * Determines if the SolutionSet has reached its limit for solutions based on the current state of
  * the solution.
- * // TODO detail this function
  * @param {SolutionSet} solutionSet - the SolutionSet being examined for a breadth limit
  * @param {array} currentSeries - an array of words representing the current state of the solution
  * @returns 
@@ -59,23 +70,6 @@ function update(solutionSet) {
     if (solutionSet.count <= 1) { return }
     updateCounts(solutionSet);
     updateLimit(solutionSet);
-    // for (let b = 0; b < limiter.getLength(); b++) {
-    //     if (previousSolution[b] === currentSolution[b]) {
-    //         limiter.incrementCount(b);
-    //     }
-    //     else {
-    //         for (; b < limiter.getLength(); b++) {
-    //             limiter.clearCount(b);
-    //         }
-    //     }
-    // }
-    // for (let b = 0; b < limiter.getLength(); b++) {
-    //     if (limitExceededForIndex(b)) {
-    //         limiter.setLimit((currentSolution.length - 1) - b);
-    //         break;
-    //     }
-    // }
-
 }
 
 function updateCounts(solutionSet) {
