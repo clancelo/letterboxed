@@ -3,8 +3,8 @@ import { SolutionSet, Solution } from './solutionData.js'
 // import { updateBreadthLimiter, isBreadthLimitReached } from './breadthLimiter.js'
 import { breadthLimiter } from './breadthLimiter.js'
 import { WordSet } from '../word/wordData.js'
+import { config } from '../config.js'
 
-const MAX_SOLUTION_LENGTH = 5;
 
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
@@ -16,7 +16,7 @@ const MAX_SOLUTION_LENGTH = 5;
  * @returns true if there are no more required letters, false otherwise
  */
 function solveWord(word, results, solutionSet, requiredLetters) {
-    if (solutionSet.currentSolution.length > MAX_SOLUTION_LENGTH) { return false }
+    if (solutionSet.currentSolution.length > config.max_solution_length) { return false }
     if (requiredLetters.length === 0) { return true }
     const lastLetter = word[word.length - 1];
     const candidateWords = results.startsWith[lastLetter] || []; // default to empty [] if no key
@@ -29,7 +29,6 @@ function solveWord(word, results, solutionSet, requiredLetters) {
             if (solveWord(candidateWord, results, solutionSet, newRequiredLetters)) {
                 let solution = new Solution(solutionSet.currentSolution);
                 solutionSet.add(solution);
-                console.log(solution.solution);
                 breadthLimiter.update(solutionSet);
             }
             solutionSet.currentSolution.pop();
@@ -37,6 +36,7 @@ function solveWord(word, results, solutionSet, requiredLetters) {
         if (breadthLimiter.hasReachedLimit()) {
             break;
         }
+
     }
     return false;
 }
@@ -54,6 +54,7 @@ function getSolutions(validWordSet, willSort) {
     let allValidWords = validWordSet.getWords();
     let solutions = new SolutionSet();
     for (let i = 0; i < allValidWords.length; i++) {
+        console.log(i / allValidWords.length);
         solutions.currentSolution.push(allValidWords[i]);
         let newRequiredLetters = getNewRequiredLetters(allValidWords[i], getPuzzleLetters());
         solveWord(allValidWords[i], validWordSet, solutions, newRequiredLetters);

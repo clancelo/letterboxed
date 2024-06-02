@@ -19,12 +19,16 @@ setPuzzle(config.puzzle_select);
 // Configure solver
 
 
-// Read dictionary
+// Prepare for solutions
 const allWordsFromDictionary = readFile(config.base_path, config.dict_path(), config.min_word_length, config.max_word_length);
+const validPuzzleWords = getValidWords(allWordsFromDictionary);
+console.log("Input, Success");
 
 // Solve Puzzle
-const validPuzzleWords = getValidWords(allWordsFromDictionary);
 const puzzleSolutions = getSolutions(validPuzzleWords, config.will_sort);
+console.log("Solutions, Success");
 
 // Output solutions
 writeSolutionsToFile(puzzleSolutions.allSolutions, config.base_path, config.solution_path);
+console.log("Output, Success");
+console.log(`Solutions Count: ${puzzleSolutions.allSolutions.length}`);

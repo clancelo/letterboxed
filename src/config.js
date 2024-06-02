@@ -11,18 +11,20 @@
  * dict_path - the complete path to the target dictionary
  * solution_path - the relative path for file output
  * dict - an array of dictionary objects that contain relative paths to the dictionary files
+ * 
+ * solution scaling
+ *  length = 5, breadth = 0
+ *  length = 4, breadth = -1
  */
 const config = {
+    will_sort: false,
+    will_limit: true,
     min_word_length: 3,
     max_word_length: 20,
     max_solution_length: 5,
+    solution_breadth: 0,
     puzzle_select: 0,
     dict_select: 2,
-    will_sort: true,
-    base_path: '',
-    set_base_path: setBasePath,
-    dict_path: getDictPath,
-    solution_path: './output/solutions.txt',
     dict: [
         {
             name: 'default',
@@ -40,7 +42,11 @@ const config = {
             name: 'debug',
             value: './dictionaries/debug.txt'
         }
-    ]
+    ],
+    solution_path: './output/solutions.txt',
+    base_path: '',
+    set_base_path: setBasePath,
+    dict_path: getDictPath
 }
 
 /**
