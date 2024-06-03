@@ -1,3 +1,5 @@
+import { config } from '../config.js'
+
 /**
  * An encapsulation of a specifi location within the LetterBoxed puzzle. Each location has an id 
  * value (0-11, clockwise from the top left) and a letter associated with it. Both of these values
@@ -41,6 +43,8 @@ function buildPuzzle(puzzleString) {
 const puzzleManager = {
     currentPuzzleIndex: 0,
     archive: [
+        buildPuzzle('ARNPDCUIMTLO'),
+        buildPuzzle('AERUCTSYIQLV'),
         buildPuzzle('TKLUAINYEBZH'),
         buildPuzzle('NEUICKWRPTAL'),
         buildPuzzle('AUEVCNRIOGLF'),
@@ -52,24 +56,12 @@ const puzzleManager = {
 }
 
 /**
- * Sets the puzzle to be solved by selecting an index into the puzzle archive.
- * @param {number} puzzleIndex - an index into the puzzle archive
- * @returns true if the puzzle index is succesfully set, false otherwise
- */
-function setPuzzle(puzzleIndex) {
-    if (typeof puzzleIndex !== 'number') { return false }
-    if (puzzleIndex < 0 || puzzleIndex >= puzzleManager.archive.length) { return false }
-    puzzleManager.currentPuzzleIndex = puzzleIndex;
-    return true;
-}
-
-/**
  * Gets a puzzle array containing puzzle-id and letter information. The currentPuzzleIndex is used
  * to access the puzzle archive.
  * @returns an array of puzzle objects
  */
 function getPuzzle() {
-    return puzzleManager.archive[puzzleManager.currentPuzzleIndex]
+    return puzzleManager.archive[config.puzzle_select];
 }
 
 /**
@@ -77,8 +69,8 @@ function getPuzzle() {
  * @returns an array of letters representing the puzzle
  */
 function getPuzzleLetters() {
-    const puzzle = puzzleManager.archive[puzzleManager.currentPuzzleIndex];
+    const puzzle = puzzleManager.archive[config.puzzle_select];
     return puzzle.map(letter => letter.value);
 }
 
-export { setPuzzle, getPuzzle, getPuzzleLetters, PuzzleLetter };
+export { getPuzzle, getPuzzleLetters, PuzzleLetter };

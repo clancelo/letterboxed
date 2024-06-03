@@ -9,6 +9,7 @@ class SolutionSet {
     constructor() {
         this.currentSolution = [];
         this.allSolutions = [];
+        this.count = 0;
     }
 
     /**
@@ -17,6 +18,7 @@ class SolutionSet {
      */
     add(solution) {
         this.allSolutions.push(solution);
+        this.count++;
     }
 
     /**
@@ -46,14 +48,13 @@ class Solution {
     /**
      * Builds a Solution.
      * @param {array} solution - an array of words representing a solution to the puzzle
-     * @param {number} wordCount - the number of words in the solution
-     * @param {number} characterCount - the number of characters in the solution
      */
-    constructor(solution, wordCount, characterCount) {
-        this.solution = solution;
-        this.wordCount = wordCount;
-        this.characterCount = characterCount;
-        this.rating = wordCount * characterCount;
+    constructor(solution) {
+        if (!Array.isArray(solution)) { solution = [] }
+        this.solution = solution.slice();
+        this.wordCount = solution.length;
+        this.characterCount = getCharacterCount(solution);
+        this.rating = this.wordCount * this.characterCount;
     }
 
     /**
@@ -67,6 +68,15 @@ class Solution {
             this.solution;
     }
 
+}
+
+/**
+ * Returns the number of characters in a solution.
+ * @param {array} solution - the solution to count
+ * @returns the number of characters in the solution
+ */
+function getCharacterCount(solution) {
+    return solution.join('').length;
 }
 
 export { Solution, SolutionSet };

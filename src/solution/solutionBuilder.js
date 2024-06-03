@@ -1,84 +1,53 @@
 import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
+import { breadthLimiter } from './breadthLimiter.js'
 import { WordSet } from '../word/wordData.js'
-
-let series = [];
-
-/**
- * Determines if the SolutionSet has reached its limit for solutions based on the current state of
- * the solution.
- * // TODO detail this function
- * @param {SolutionSet} solutionSet - the SolutionSet being examined for a breadth limit
- * @param {array} currentSeries - an array of words representing the current state of the solution
- * @returns 
- */
-function isBreadthLimitReached(solutionSet, currentSeries) {
-    if (solutionSet.allSolutions.length === 0) {
-    } else if (solutionSet.allSolutions.length > 18) { // TODO remove debug check
-        let base = 2;
-        let exponent = 4 - currentSeries.length;
-        let numAllowedRepeats = Math.pow(base, exponent);
-        let rangeEnd = solutionSet.allSolutions.length;
-        let rangeStart = Math.max(0, (rangeEnd - numAllowedRepeats));
-        let solutionRange = solutionSet.allSolutions.slice(rangeStart, rangeEnd)
-        let y = 1;
-        // do all values from currentSeries appear in solutionSet the maximum
-        // number of times? return true;
-        for (let i = 0; i < solutionRange.length - 1; i++) {
-            let currentSolution = currentSeries[currentSeries.length - 1];
-            // let currentSolution = solutionRange[i].solution[currentSeries.length - 1];
-            let nextSolution = solutionRange[i].solution[currentSeries.length - 1];
-            if (currentSolution !== nextSolution) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
+import { config } from '../config.js'
+import { Log } from '../logger.js'
 
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is
  * performed in the calling function.
  * @param {string} word - the word being solved
- * @param {ResultSet} results - the ResultSet of the word search for the puzzle
+ * @param {WordSet} wordSet - the WordSet of the word search for the puzzle
  * @param {SolutionSet} solutionSet - the SolutionSet being populated
  * @param {array} requiredLetters - an array of required letters 
  * @returns true if there are no more required letters, false otherwise
  */
-function solveWord(word, results, solutionSet, requiredLetters) {
-    if (series.length === 5 && requiredLetters.length !== 0) {
-        return false;
-    }
-    if (requiredLetters.length === 0) {
-        return true;
-    }
-    let lastLetter = word[word.length - 1];
-    let candidateWords = results.startsWith[lastLetter] || [];
-    if (candidateWords.length === 0) {
-        return false;
-    }
+function solveWord(word, wordSet, solutionSet, requiredLetters) {
+    if (solutionSet.currentSolution.length > config.max_solution_length) { return false }
+    if (requiredLetters.length === 0) { return true }
+    const lastLetter = word[word.length - 1];
+    const candidateWords = wordSet.startsWith[lastLetter] ?? []; // default to empty [] if no key
+    if (candidateWords.length === 0) { return false }
     for (let c = 0; c < candidateWords.length; c++) {
-
-        let candidateWord = candidateWords[c];
-        if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
-            if (isBreadthLimitReached(solutionSet, series.slice())) {
-                break;
-            }
-            series.push(candidateWord);
-            let newAvailableLetters = getNewRequiredLetters(candidateWord, requiredLetters);
-            if (solveWord(candidateWord, results, solutionSet, newAvailableLetters)) {
-                if (newAvailableLetters.length === 0) {
-                    let solution = new Solution(series.slice(), series.length, getCharacterCount(series));
-                    solutionSet.add(solution);
-                    console.log(series);
-                }
-            } else {
-                // console.log(series)
-            }
-            series.pop();
+        processCandidateWord(candidateWords[c], wordSet, solutionSet, requiredLetters);
+        if (breadthLimiter.hasReachedLimit()) {
+            break;
         }
     }
     return false;
+}
+
+/**
+ * Processes a candidate word by checking if it uses any required letters and updating the solution
+ * set. This function is called recursively by solveWord to explore possible solutions.
+ * @param {string} candidateWord - the candidate word to be processed
+ * @param {WordSet} wordSet - the WordSet containing words for the puzzle
+ * @param {SolutionSet} solutionSet - the SolutionSet being populated
+ * @param {array} requiredLetters - an array of required letters
+ */
+function processCandidateWord(candidateWord, wordSet, solutionSet, requiredLetters) {
+    if (wordUsesRequiredLetter(candidateWord, requiredLetters)) {
+        solutionSet.currentSolution.push(candidateWord);
+        let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
+        if (solveWord(candidateWord, wordSet, solutionSet, newRequiredLetters)) {
+            let solution = new Solution(solutionSet.currentSolution);
+            solutionSet.add(solution);
+            breadthLimiter.update(solutionSet);
+        }
+        solutionSet.currentSolution.pop();
+    }
 }
 
 /**
@@ -90,18 +59,17 @@ function solveWord(word, results, solutionSet, requiredLetters) {
 function getSolutions(validWordSet, willSort) {
     if (!(validWordSet instanceof WordSet)) { return new SolutionSet() }
     if (typeof willSort !== 'boolean') { return new SolutionSet() }
-    let words = validWordSet.getWords();
-    let requiredLetters = getPuzzleLetters();
-    let solutionSet = new SolutionSet();
-    for (let i = 0; i < words.length; i++) {
-        let candidateWord = words[i];
-        series.push(candidateWord);
-        let newRequiredLetters = getNewRequiredLetters(candidateWord, requiredLetters);
-        solveWord(candidateWord, validWordSet, solutionSet, newRequiredLetters);
-        series.pop();
+    let allValidWords = validWordSet.getWords();
+    let solutions = new SolutionSet();
+    for (let i = 0; i < allValidWords.length; i++) {
+        Log.outputProgress(i, allValidWords.length);
+        solutions.currentSolution.push(allValidWords[i]);
+        let newRequiredLetters = getNewRequiredLetters(allValidWords[i], getPuzzleLetters());
+        solveWord(allValidWords[i], validWordSet, solutions, newRequiredLetters);
+        solutions.currentSolution.pop();
     }
-    if (willSort) { solutionSet.sort() }
-    return solutionSet;
+    if (willSort) { solutions.sort() }
+    return solutions;
 }
 
 /**
@@ -139,17 +107,6 @@ function getNewRequiredLetters(word, requiredLetters) {
         }
     }
     return Array.from(newRequiredLetters);
-}
-
-/**
- * Returns the number of characters in a solution.
- * TODO data type
- * @param {array} solution - the solution to count
- * @returns the number of characters in the solution
- */
-function getCharacterCount(solution) {
-    if (!Array.isArray(solution)) { return 0 }
-    return solution.join('').length;
 }
 
 export { getSolutions };

@@ -1,6 +1,6 @@
 /**
  * Configuration object governing the various parameters for the program.
- * 
+ * //TODO add comments for additional keys
  * min_word_length - the smallest word length accepted from the dictionary file
  * max_word_length - the largest word length accepted from the dictionary file
  * puzzle_select - an index in the puzzle archive, indicating which puzzle is to be solved
@@ -13,15 +13,16 @@
  * dict - an array of dictionary objects that contain relative paths to the dictionary files
  */
 const config = {
+    will_sort: true,
+    will_limit: true,
+    silence_all_output: false,
+    silence_progress_output: false,
     min_word_length: 3,
     max_word_length: 20,
+    max_solution_length: 5,
+    solution_breadth: 0,
     puzzle_select: 1,
-    dict_select: 0,
-    will_sort: true,
-    base_path: '',
-    set_base_path: setBasePath,
-    dict_path: getDictPath,
-    solution_path: './output/solutions.txt',
+    dict_select: 2,
     dict: [
         {
             name: 'default',
@@ -34,8 +35,33 @@ const config = {
         {
             name: 'az',
             value: './dictionaries/az.txt'
+        },
+        {
+            name: 'debug',
+            value: './dictionaries/debug.txt'
         }
-    ]
+    ],
+    solution_path: './output/solutions.txt',
+    base_path: '',
+    set_base_path: setBasePath,
+    dict_path: getDictPath
+}
+
+class Config {
+    constructor() {
+        this.valid = false;
+        const configValidated = validateConfigFile();
+        if (configValidated) {
+            this.valid = true;
+        }
+    }
+    isInvalid() {
+        return !this.valid;
+    }
+}
+
+function validateConfigFile() {
+    return false;
 }
 
 /**
@@ -60,4 +86,4 @@ function getDictPath() {
     return config.dict[config.dict_select].value;
 }
 
-export { config };
+export { Config, config };

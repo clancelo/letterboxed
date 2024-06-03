@@ -1,3 +1,5 @@
+import { Log } from '../logger.js'
+
 /**
  * An n-graph node that holds puzzle-id, letter, and graph depth. The id is the location within the
  * puzzle, the letter is the letter at that location, and the depth is the zero-indexed depth into
@@ -22,27 +24,27 @@ class LetterNode {
      * Prints the letter graph below this Node.
      */
     print() {
-        this.#printIterative();
+        this.printIterative();
     }
 
     /**
      * Prints recursivelt the letter graph below this Node.
      */
-    #printRecursive(node, indentLevel) {
-        console.log(' '.repeat(indentLevel * 4) + node.letter);
+    printRecursive(node, indentLevel) {
+        Log.log(' '.repeat(indentLevel * 4) + node.letter);
         for (let i = 0; i < node.children.length; i++) {
-            this.#printRecursive(node.children[i], indentLevel + 1);
+            this.printRecursive(node.children[i], indentLevel + 1);
         }
     }
 
     /**
      * Prints iteratively the letter graph below this Node.
      */
-    #printIterative() {
+    printIterative() {
         let stack = [this];
         while (stack.length > 0) {
             let currentNode = stack.pop();
-            console.log(currentNode.letter)
+            Log.log(currentNode.letter)
             for (let i = currentNode.children.length - 1; i >= 0; i--) {
                 stack.push(currentNode.children[i]);
             }
@@ -86,14 +88,13 @@ class WordSet {
     addWord(word) {
         if (typeof word !== 'string') { return false };
         if (word.length === 0) { return false };
-        if (this.#wordHasInvalidCharacters(word)) { return false };
         const firstLetter = word[0];
         const lastLetter = word[word.length - 1];
-        const wordRating = this.#getWordRating(word);
+        const wordRating = this.getWordRating(word);
         this.allWords[word] = wordRating;
-        this.#addToCollection(this.startsWith, firstLetter, word);
-        this.#addToCollection(this.endsWith, lastLetter, word);
-        this.#addToCollection(this.rating, wordRating, word);
+        this.addToCollection(this.startsWith, firstLetter, word);
+        this.addToCollection(this.endsWith, lastLetter, word);
+        this.addToCollection(this.rating, wordRating, word);
         return true;
     }
 
@@ -104,7 +105,7 @@ class WordSet {
      * @param {string} word - the value to be added
      * @returns true if the key-value pair is added to the collection object
      */
-    #addToCollection(collection, key, word) {
+    addToCollection(collection, key, word) {
         if (typeof collection !== 'object') { return false }
         if (typeof key !== 'string' && typeof key !== 'number') { return false }
         if (typeof word !== 'string') { return false }
@@ -118,19 +119,9 @@ class WordSet {
      * @param {string} word - the word being rated
      * @returns the number of unique characters in the string
      */
-    #getWordRating(word) {
+    getWordRating(word) {
         if (typeof word !== 'string') { return 0 };
         return new Set(word).size;
-    }
-
-    /**
-     * Returns whether a word has at least 1 invalid character
-     * @param {string} word - the word being validated
-     * @returns 
-     */
-    #wordHasInvalidCharacters(word) {
-        //TODO implement
-        return false
     }
 
 }
