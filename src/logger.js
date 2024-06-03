@@ -46,6 +46,7 @@ function phaseEnd(phaseStatus) {
  * @param {object} puzzleSolutions - The object containing all the puzzle solutions
  */
 function programEnd(puzzleSolutions) {
+    if (!(puzzleSolutions instanceof SolutionSet)) { return }
     console.log(`Solutions Count: ${puzzleSolutions.allSolutions.length}`);
     console.log("Program End");
 }

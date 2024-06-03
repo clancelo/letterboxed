@@ -1,6 +1,6 @@
 /**
  * Configuration object governing the various parameters for the program.
- * 
+ * //TODO add comments for additional keys
  * min_word_length - the smallest word length accepted from the dictionary file
  * max_word_length - the largest word length accepted from the dictionary file
  * puzzle_select - an index in the puzzle archive, indicating which puzzle is to be solved
@@ -11,10 +11,6 @@
  * dict_path - the complete path to the target dictionary
  * solution_path - the relative path for file output
  * dict - an array of dictionary objects that contain relative paths to the dictionary files
- * 
- * solution scaling
- *  length = 5, breadth = 0
- *  length = 4, breadth = -1
  */
 const config = {
     will_sort: true,
@@ -25,7 +21,7 @@ const config = {
     max_word_length: 20,
     max_solution_length: 5,
     solution_breadth: 0,
-    puzzle_select: 0,
+    puzzle_select: 1,
     dict_select: 2,
     dict: [
         {
@@ -51,6 +47,23 @@ const config = {
     dict_path: getDictPath
 }
 
+class Config {
+    constructor() {
+        this.valid = false;
+        const configValidated = validateConfigFile();
+        if (configValidated) {
+            this.valid = true;
+        }
+    }
+    isInvalid() {
+        return !this.valid;
+    }
+}
+
+function validateConfigFile() {
+    return false;
+}
+
 /**
  * Sets the base path for this instance of the program
  * @param {string} basePath - the base path of the program
@@ -73,4 +86,4 @@ function getDictPath() {
     return config.dict[config.dict_select].value;
 }
 
-export { config };
+export { Config, config };

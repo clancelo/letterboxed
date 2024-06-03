@@ -1,7 +1,7 @@
 import { readFile, writeSolutionsToFile } from './file/fileManager.js'
 import { getValidWords } from './word/wordBuilder.js'
 import { getSolutions } from './solution/solutionBuilder.js'
-import { config } from './config.js'
+import { Config } from './config.js'
 import { Log } from './logger.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -9,7 +9,9 @@ import { dirname } from 'path';
 Log.programStart();
 
 // Validate config
-//TODO: Validate config
+const config = new Config();
+if (config.isInvalid()) { Log.programEnd(null) }
+
 //TODO: Configure systems to remove their access to config
 
 // Configure directory
