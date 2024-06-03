@@ -52,7 +52,12 @@ const puzzleManager = {
         buildPuzzle('OEPBHYKSRUCA'),
         buildPuzzle('OIVBGRPMDEAY'),
         buildPuzzle('YHOLFVRTNIWG'),
-    ]
+    ],
+    puzzleCount: 9
+}
+
+function getPuzzleCount() {
+    return puzzleManager.puzzleCount;
 }
 
 /**
@@ -73,4 +78,4 @@ function getPuzzleLetters() {
     return puzzle.map(letter => letter.value);
 }
 
-export { getPuzzle, getPuzzleLetters, PuzzleLetter };
+export { getPuzzle, getPuzzleLetters, PuzzleLetter, getPuzzleCount };

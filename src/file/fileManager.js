@@ -50,4 +50,24 @@ function writeSolutionsToFile(solutionsArray, basePath, filePath) {
     }
 }
 
+/**
+ * Reads a file of ...
+ * @returns ...
+ */
+function readConfigFile() {
+    try {
+        const fileConent = fs.readFileSync(resolve(basePath, filePath), 'utf8');
+        let wordList = fileConent.split('\n');
+        wordList = wordList
+            .filter(word => word.trim() !== '') // remove empty words
+            .map(word => word.trim().toUpperCase()) // normalize words
+            .filter(word => word.length <= maxLength) // enforce max length
+            .filter(word => word.length >= minLength); // enforce min length
+        return wordList;
+    } catch (readFileError) {
+        console.error(`Error reading file from path: ${filePath}`);
+        return [];
+    }
+}
+
 export { readFile, writeSolutionsToFile };

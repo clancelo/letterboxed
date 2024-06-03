@@ -9,15 +9,14 @@ import { dirname } from 'path';
 Log.programStart();
 
 // Validate config
-const config = new Config();
-if (config.isInvalid()) { Log.programEnd(null) }
-
 //TODO: Configure systems to remove their access to config
 
-// Configure directory
+// Configuration
 Log.phaseStart("Configuration");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const config = new Config(__dirname);
+if (config.isInvalid()) { Log.programEnd(null) }
 config.set_base_path(__dirname);
 Log.phaseEnd(true);
 
