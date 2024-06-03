@@ -43,6 +43,7 @@ function buildPuzzle(puzzleString) {
 const puzzleManager = {
     currentPuzzleIndex: 0,
     archive: [
+        buildPuzzle('SLIOURWKHNJG'),
         buildPuzzle('ARNPDCUIMTLO'),
         buildPuzzle('AERUCTSYIQLV'),
         buildPuzzle('TKLUAINYEBZH'),
@@ -53,7 +54,7 @@ const puzzleManager = {
         buildPuzzle('OIVBGRPMDEAY'),
         buildPuzzle('YHOLFVRTNIWG'),
     ],
-    puzzleCount: 9
+    puzzleCount: 10
 }
 
 function getPuzzleCount() {

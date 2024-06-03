@@ -1,4 +1,5 @@
 import { getPuzzleCount } from './puzzle/puzzleManager.js'
+import { readConfigFile } from './file/fileManager.js'
 /**
  * Configuration object governing the various parameters for the program.
  * //TODO add comments for additional keys
@@ -22,24 +23,24 @@ const config = {
     max_word_length: 20,
     max_solution_length: 5,
     solution_breadth: 0,
-    puzzle_select: 1,
+    puzzle_select: 4,
     dict_select: 2,
     dict: [
         {
             name: 'default',
-            value: './dictionaries/oxford.txt'
+            path: './dictionaries/oxford.txt'
         },
         {
             name: 'ox',
-            value: './dictionaries/oxford.txt'
+            path: './dictionaries/oxford.txt'
         },
         {
             name: 'az',
-            value: './dictionaries/az.txt'
+            path: './dictionaries/az.txt'
         },
         {
             name: 'debug',
-            value: './dictionaries/debug.txt'
+            path: './dictionaries/debug.txt'
         }
     ],
     solution_path: './output/solutions.txt',
@@ -49,6 +50,10 @@ const config = {
 }
 
 class Config {
+    // TODO index dictionary paths
+    // TODO store puzzle differentyl
+
+    //TODO next - why is the wrong puzzle_select being returned
     constructor(basePath) {
         this.valid = false;
         this.will_sort = false;
@@ -64,19 +69,19 @@ class Config {
         this.dict = [
             {
                 name: 'default',
-                value: './dictionaries/oxford.txt'
+                path: './dictionaries/oxford.txt'
             },
             {
                 name: 'ox',
-                value: './dictionaries/oxford.txt'
+                path: './dictionaries/oxford.txt'
             },
             {
                 name: 'az',
-                value: './dictionaries/az.txt'
+                path: './dictionaries/az.txt'
             },
             {
                 name: 'debug',
-                value: './dictionaries/debug.txt'
+                path: './dictionaries/debug.txt'
             }
         ];
         this.solution_path = './output/solutions.txt';
@@ -88,7 +93,8 @@ class Config {
         this.initializeConfig(basePath);
     }
     initializeConfig(basePath) {
-        const configData = this.readConfigFile();
+        const configData = this.readConfig();
+        // const configData = readConfigFile();
         if (typeof configData !== 'object') { return }
         const configEntries = Object.entries(configData);
         for (const [key, value] of configEntries) {
@@ -111,6 +117,9 @@ class Config {
                 case 'max_word_length':
                     this.setMaxWordLength(key, value);
                     break;
+                case 'max_solution_length':
+                    this.setMaxSolutionLength(key, value);
+                    break;
                 case 'solution_breadth':
                     this.setSolutionBreadth(key, value);
                     break;
@@ -130,25 +139,34 @@ class Config {
         this.setBasePath(basePath);
         this.valid = true;
     }
-
     setBasePath(basePath) {
         if (typeof basePath !== 'string') { return false }
-        config.base_path = basePath;
+        this['base_path'] = basePath;
         return true;
     }
-
     setBoolean(key, value) {
         if (typeof value !== 'boolean') { return }
         this[key] = value;
     }
     setMinWordLength(key, value) {
         if (typeof value !== 'number') { return }
-        if (value < 3 || value > this.max_word_length) { return }
+        if (value < 3) { return }
         this[key] = value;
+        if (this.min_word_length > this.max_word_length) {
+            this.max_word_length = this.min_word_length;
+        }
     }
     setMaxWordLength(key, value) {
         if (typeof value !== 'number') { return }
-        if (value < 3 || value < this.min_word_length) { return }
+        if (value < 3) { return }
+        this[key] = value;
+        if (this.max_word_length < this.min_word_length) {
+            this.min_word_length = this.max_word_length;
+        }
+    }
+    setMaxSolutionLength(key, value) {
+        if (typeof value !== 'number') { return }
+        if (value < 1) { return }
         this[key] = value;
     }
     setSolutionBreadth(key, value) {
@@ -169,11 +187,26 @@ class Config {
         if (typeof value !== 'string') { return }
         this[key] = value;
     }
-    getDictPath() {
-        return
+    getDictPath = () => {
+        return this.dict[this.dict_select].path;
     }
-    isInvalid() {
-        return !this.valid;
+    isValid() {
+        return this.valid;
+    }
+    readConfig() {
+        return {
+            will_sort: true,
+            will_limit: true,
+            silence_all_output: false,
+            silence_progress_output: false,
+            min_word_length: 3,
+            max_word_length: 20,
+            max_solution_length: 5,
+            solution_breadth: 0,
+            puzzle_select: 0,
+            dict_select: 2,
+            solution_path: './output/solutions.txt',
+        }
     }
 }
 
@@ -196,9 +229,9 @@ function setBasePath(basePath) {
  */
 function getDictPath() {
     if (config.dict_select < 0 || config.dict_select >= config.dict.length) {
-        return config.dict[0].value // default dictionary
+        return config.dict[0].path // default dictionary
     }
-    return config.dict[config.dict_select].value;
+    return config.dict[config.dict_select].path;
 }
 
 export { Config, config };

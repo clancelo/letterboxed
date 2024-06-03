@@ -13,16 +13,13 @@ Log.programStart();
 
 // Configuration
 Log.phaseStart("Configuration");
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const config = new Config(__dirname);
-if (config.isInvalid()) { Log.programEnd(null) }
-config.set_base_path(__dirname);
+const config = new Config(dirname(fileURLToPath(import.meta.url)));
+if (!config.isValid()) { Log.programEnd(null) }
 Log.phaseEnd(true);
 
 // Prepare for solutions
 Log.phaseStart("Input");
-const allWordsFromDictionary = readFile(config.base_path, config.dict_path(), config.min_word_length, config.max_word_length);
+const allWordsFromDictionary = readFile(config.base_path, config.getDictPath(), config.min_word_length, config.max_word_length);
 const validPuzzleWords = getValidWords(allWordsFromDictionary);
 Log.phaseEnd(true);
 

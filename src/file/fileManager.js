@@ -70,4 +70,4 @@ function readConfigFile() {
     }
 }
 
-export { readFile, writeSolutionsToFile };
+export { readFile, writeSolutionsToFile, readConfigFile };
