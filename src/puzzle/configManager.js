@@ -46,7 +46,11 @@ class ConfigManager {
      */
     initialize(basePath) {
         if (typeof basePath !== 'string') { return }
+        //TODO all this
+        //this.readPuzzles
+        //this.readDictionaries
         this.initializeConfig(basePath);
+        //this.adjust indices to account for puzzles and dictionaries lengths
     }
 
     /**
