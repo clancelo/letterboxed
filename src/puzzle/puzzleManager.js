@@ -1,5 +1,4 @@
-import { config } from '../config.js'
-
+import { configManager } from './configManager.js'
 /**
  * An encapsulation of a specifi location within the LetterBoxed puzzle. Each location has an id 
  * value (0-11, clockwise from the top left) and a letter associated with it. Both of these values
@@ -67,7 +66,7 @@ function getPuzzleCount() {
  * @returns an array of puzzle objects
  */
 function getPuzzle() {
-    return puzzleManager.archive[config.puzzle_select];
+    return puzzleManager.archive[configManager.getPuzzleSelect()];
 }
 
 /**
@@ -75,7 +74,7 @@ function getPuzzle() {
  * @returns an array of letters representing the puzzle
  */
 function getPuzzleLetters() {
-    const puzzle = puzzleManager.archive[config.puzzle_select];
+    const puzzle = puzzleManager.archive[configManager.getPuzzleSelect()];
     return puzzle.map(letter => letter.value);
 }
 

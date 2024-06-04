@@ -1,35 +1,27 @@
 import { readFile, writeSolutionsToFile } from './file/fileManager.js'
 import { getValidWords } from './word/wordBuilder.js'
 import { getSolutions } from './solution/solutionBuilder.js'
-import { Config } from './config.js'
+import { configManager } from './puzzle/configManager.js'
 import { Log } from './logger.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 Log.programStart();
-
-// Validate config
-//TODO: Configure systems to remove their access to config
-
-// Configuration
 Log.phaseStart("Configuration");
-const config = new Config(dirname(fileURLToPath(import.meta.url)));
-if (!config.isValid()) { Log.programEnd(null) }
+configManager.initialize(dirname(fileURLToPath(import.meta.url)));
+if (!(configManager.isValid())) { Log.programEnd(null) }
 Log.phaseEnd(true);
 
-// Prepare for solutions
 Log.phaseStart("Input");
-const allWordsFromDictionary = readFile(config.base_path, config.getDictPath(), config.min_word_length, config.max_word_length);
-const validPuzzleWords = getValidWords(allWordsFromDictionary);
+const allWordsFromDictionary = readFile();
 Log.phaseEnd(true);
 
-// Solve Puzzle
 Log.phaseStart("Solutions");
-const puzzleSolutions = getSolutions(validPuzzleWords, config.will_sort);
+const validPuzzleWords = getValidWords(allWordsFromDictionary);
+const puzzleSolutions = getSolutions(validPuzzleWords);
 Log.phaseEnd(true);
 
-// Output solutions
 Log.phaseStart("Output");
-writeSolutionsToFile(puzzleSolutions.allSolutions, config.base_path, config.solution_path);
+writeSolutionsToFile(puzzleSolutions.allSolutions);
 Log.phaseEnd(true);
 Log.programEnd(puzzleSolutions);

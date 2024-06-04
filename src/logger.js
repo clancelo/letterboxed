@@ -1,12 +1,12 @@
 import { SolutionSet } from './solution/solutionData.js'
-import { config } from './config.js'
+import { configManager } from './puzzle/configManager.js'
 
 /**
  * Logs a message to the console.
  * @param {string} string - The message to be logged
  */
 function log(string) {
-    if (config.silence_all_output) { return }
+    if (configManager.getSilenceAllOutput()) { return }
     console.log(string);
 }
 
@@ -16,8 +16,8 @@ function log(string) {
  * @param {number} maxWords - The number of possible words for a puzzle
  */
 function outputProgress(currentWord, maxWords) {
-    if (config.silence_all_output) { return }
-    if (config.silence_progress_output) { return }
+    if (configManager.getSilenceAllOutput()) { return }
+    if (configManager.getSilenceProgressOutput()) { return }
     if (currentWord % (maxWords > 1000 ? 50 : 10) === 0) {
         console.log(currentWord + " / " + maxWords);
     }
@@ -28,7 +28,7 @@ function outputProgress(currentWord, maxWords) {
  * @param {string} string - The phase description to be logged
  */
 function phaseStart(string) {
-    if (config.silence_all_output) { return }
+    if (configManager.getSilenceAllOutput()) { return }
     process.stdout.write(string + ", ");
 }
 
@@ -37,7 +37,7 @@ function phaseStart(string) {
  * @param {boolean} phaseStatus - Success or failure of the phase
  */
 function phaseEnd(phaseStatus) {
-    if (config.silence_all_output) { return }
+    if (configManager.getSilenceAllOutput()) { return }
     console.log(phaseStatus ? "Success" : "Failure");
 }
 
