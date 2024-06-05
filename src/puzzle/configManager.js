@@ -1,4 +1,4 @@
-import { readConfigFile } from '../file/fileManager.js'
+import { readConfigFile, readPuzzlesFile, readDictionaryDirectory } from '../file/fileManager.js'
 
 /**
  * Class representing a configuration manager.
@@ -15,39 +15,12 @@ class ConfigManager {
         this.maxSolutionLength = 0;
         this.solutionBreadth = 0;
         this.puzzleSelect = 0;
-        this.puzzles = [
-            "SLIOURWKHNJG",
-            "ARNPDCUIMTLO",
-            "AERUCTSYIQLV",
-            "TKLUAINYEBZH",
-            "NEUICKWRPTAL",
-            "AUEVCNRIOGLF",
-            "QKIHMUAOSFRE",
-            "OEPBHYKSRUCA",
-            "OIVBGRPMDEAY",
-            "YHOLFVRTNIWG"
-        ]
+        this.puzzles = [];
         this.dictionarySelect = 0;
-        this.dictionary = [
-            {
-                name: 'default',
-                path: './dictionaries/oxford.txt'
-            },
-            {
-                name: 'ox',
-                path: './dictionaries/oxford.txt'
-            },
-            {
-                name: 'az',
-                path: './dictionaries/az.txt'
-            },
-            {
-                name: 'debug',
-                path: './dictionaries/debug.txt'
-            }
-        ];
+        this.dictionary = [];
         this.configPath = './config.json';
         this.solutionPath = './output/solutions.txt';
+        this.puzzlesPath = './puzzle/puzzles.json';
         this.basePath = '';
         this.configValidationMap = {
             willSort: this.setBoolean,
@@ -70,11 +43,9 @@ class ConfigManager {
      */
     initialize(basePath) {
         if (typeof basePath !== 'string') { return }
-        //TODO all this
-        //this.readPuzzles
-        //this.readDictionaries
+        this.configurePuzzles();
+        this.configureDictionaries();
         this.initializeConfig(basePath);
-        //this.adjust indices to account for puzzles and dictionaries lengths
     }
 
     /**
@@ -85,10 +56,90 @@ class ConfigManager {
         const configData = readConfigFile();
         if (typeof configData !== 'object') { return }
         const configEntries = Object.entries(configData);
-        this.setConfigurableProperties(configEntries);
         this.setBasePath(basePath);
+        this.setConfigurableProperties(configEntries);
         this.valid = true;
     }
+
+    /**
+     * Reads the dictionaries directory for dictionary files and updated the configuration to include
+     * name and path references to valid dictionaries.
+     */
+    configureDictionaries() {
+        let dictionaryDirectoryData = readDictionaryDirectory()
+        let validatedDictionaryArray = this.extrctValidDictionaries(dictionaryDirectoryData);
+        this.dictionary = validatedDictionaryArray;
+    }
+
+    /**
+     * Extracts the valid dictionary entries from the potential entries. The original array is not
+     * mutated - a new array is returned.
+     * @param {Array} puzzleFileData - an array holding potential dictionary entries
+     * @returns an array of valid dictionary entries with name and path
+     */
+    extrctValidDictionaries(dictionaryDirectoryData) {
+        if (!(Array.isArray(dictionaryDirectoryData))) { return [] }
+        let arrayOfValidDictionaries = [];
+        for (let d = 0; d < dictionaryDirectoryData.length; d++) {
+            if (this.isInvalidDictionaryEntry(dictionaryDirectoryData[d])) {
+                continue;
+            }
+            arrayOfValidDictionaries.push(dictionaryDirectoryData[d]);
+        }
+        return arrayOfValidDictionaries;
+    }
+
+    /**
+     * Determines if the potential dictionary is an object with name and path strings.
+     * @returns true if the potential dictionary has name and path strings
+     */
+    isInvalidDictionaryEntry(potentialDictionary) {
+        if (typeof potentialDictionary !== 'object') { return true }
+        if (!('name' in potentialDictionary)) { return true }
+        if (!('path' in potentialDictionary)) { return true }
+        if (typeof potentialDictionary['name'] !== 'string') { return true }
+        if (typeof potentialDictionary['path'] !== 'string') { return true }
+        return false;
+    }
+
+    /**
+     * Reads the puzzle data stored in file and populates the current configuration with the valid
+     * puzzles read from file.
+     */
+    configurePuzzles() {
+        let puzzleFileData = readPuzzlesFile();
+        let validatedPuzzleArray = this.extractValidPuzzles(puzzleFileData);
+        this.puzzles = validatedPuzzleArray;
+    }
+
+    /**
+     * Extracts the valid puzzles from an array of potential puzzles. The original array is not
+     * mutated - a new array is returned.
+     * @param {Array} puzzleFileData - an array holding the letters in a puzzle configuration
+     * @returns an array of valid puzzle strings
+     */
+    extractValidPuzzles(puzzleFileData) {
+        if (!(Array.isArray(puzzleFileData))) { return [] }
+        let arrayOfValidPuzzles = [];
+        for (let p = 0; p < puzzleFileData.length; p++) {
+            if (this.isInvalidPuzzleString(puzzleFileData[p])) {
+                continue;
+            }
+            arrayOfValidPuzzles.push(puzzleFileData[p]);
+        }
+        return arrayOfValidPuzzles;
+    }
+
+    /**
+     * Determines if the potential puzzle is a string of length 12.
+     * @returns true if the argument is a string of length 12
+     */
+    isInvalidPuzzleString(potentialPuzzle) {
+        if (typeof potentialPuzzle !== 'string') { return true }
+        if (potentialPuzzle.length !== 12) { return true }
+        return false;
+    }
+
 
     /**
      * Parses the provided configuration object and applies the appropriate setProperty() function
@@ -262,6 +313,14 @@ class ConfigManager {
     }
 
     /**
+     * Get the path to the puzzles file.
+     * @returns {string} The path to the puzzles file.
+     */
+    getPuzzlesPath() {
+        return this.puzzlesPath;
+    }
+
+    /**
      * Get the maximum word length.
      * @returns {number} The maximum word length.
      */
@@ -331,6 +390,14 @@ class ConfigManager {
      */
     getSolutionPath() {
         return this.solutionPath;
+    }
+
+    /**
+     * Returns the array of puzzle strings.
+     * @returns the array of puzzle strings
+     */
+    getPuzzles() {
+        return this.puzzles;
     }
 
 }

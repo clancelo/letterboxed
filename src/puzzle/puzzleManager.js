@@ -39,7 +39,7 @@ function buildPuzzle(puzzleString) {
  * @returns an array of puzzle objects
  */
 function getPuzzle() {
-    return buildPuzzle(configManager.puzzles[configManager.getPuzzleSelect()]);
+    return buildPuzzle(configManager.getPuzzles()[configManager.getPuzzleSelect()]);
 }
 
 /**
@@ -47,7 +47,7 @@ function getPuzzle() {
  * @returns an array of letters representing the puzzle
  */
 function getPuzzleLetters() {
-    return configManager.puzzles[configManager.getPuzzleSelect()].split('');
+    return configManager.getPuzzles()[configManager.getPuzzleSelect()].split('');
 }
 
 export { getPuzzle, getPuzzleLetters, PuzzleLetter };

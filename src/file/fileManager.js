@@ -56,4 +56,41 @@ function readConfigFile() {
     return config;
 }
 
-export { readFile, writeSolutionsToFile, readConfigFile };
+/**
+ * //TODO docs
+ * @returns 
+ */
+function readPuzzlesFile() {
+    let puzzles = [];
+    try {
+        const data = fs.readFileSync(resolve(configManager.getBasePath(), configManager.getPuzzlesPath()), 'utf8');;
+        puzzles = JSON.parse(data);
+    } catch (err) {
+        console.error('Error reading puzzles file');
+    }
+    return puzzles;
+}
+
+function readDictionaryDirectory() {
+    let dictionaries = [
+        {
+            "name": "default",
+            "path": "./dictionaries/oxford.txt"
+        },
+        {
+            "name": "ox",
+            "path": "./dictionaries/oxford.txt"
+        },
+        {
+            "name": "az",
+            "path": "./dictionaries/az.txt"
+        },
+        {
+            "name": "debug",
+            "path": "./dictionaries/debug.txt"
+        }
+    ];
+    return dictionaries;
+}
+
+export { readFile, writeSolutionsToFile, readConfigFile, readPuzzlesFile, readDictionaryDirectory };
