@@ -34,39 +34,12 @@ function buildPuzzle(puzzleString) {
 }
 
 /**
- * Puzzle management object governing which puzzle is to be solved.
- * 
- * currentPuzzleIndex - the index into the archive of the puzzle to be solved
- * archive - a collection of puzzle arrays
- */
-const puzzleManager = {
-    currentPuzzleIndex: 0,
-    archive: [
-        buildPuzzle('SLIOURWKHNJG'),
-        buildPuzzle('ARNPDCUIMTLO'),
-        buildPuzzle('AERUCTSYIQLV'),
-        buildPuzzle('TKLUAINYEBZH'),
-        buildPuzzle('NEUICKWRPTAL'),
-        buildPuzzle('AUEVCNRIOGLF'),
-        buildPuzzle('QKIHMUAOSFRE'),
-        buildPuzzle('OEPBHYKSRUCA'),
-        buildPuzzle('OIVBGRPMDEAY'),
-        buildPuzzle('YHOLFVRTNIWG'),
-    ],
-    puzzleCount: 10
-}
-
-function getPuzzleCount() {
-    return puzzleManager.puzzleCount;
-}
-
-/**
  * Gets a puzzle array containing puzzle-id and letter information. The currentPuzzleIndex is used
  * to access the puzzle archive.
  * @returns an array of puzzle objects
  */
 function getPuzzle() {
-    return puzzleManager.archive[configManager.getPuzzleSelect()];
+    return buildPuzzle(configManager.puzzles[configManager.getPuzzleSelect()]);
 }
 
 /**
@@ -74,8 +47,7 @@ function getPuzzle() {
  * @returns an array of letters representing the puzzle
  */
 function getPuzzleLetters() {
-    const puzzle = puzzleManager.archive[configManager.getPuzzleSelect()];
-    return puzzle.map(letter => letter.value);
+    return configManager.puzzles[configManager.getPuzzleSelect()].split('');
 }
 
-export { getPuzzle, getPuzzleLetters, PuzzleLetter, getPuzzleCount };
+export { getPuzzle, getPuzzleLetters, PuzzleLetter };

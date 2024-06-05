@@ -1,0 +1,18 @@
+[
+    {
+        "name": "default",
+        "path": "./dictionaries/oxford.txt"
+    },
+    {
+        "name": "ox",
+        "path": "./dictionaries/oxford.txt"
+    },
+    {
+        "name": "az",
+        "path": "./dictionaries/az.txt"
+    },
+    {
+        "name": "debug",
+        "path": "./dictionaries/debug.txt"
+    }
+]

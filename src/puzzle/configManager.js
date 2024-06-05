@@ -1,4 +1,3 @@
-import { getPuzzleCount } from './puzzleManager.js'
 import { readConfigFile } from '../file/fileManager.js'
 
 /**
@@ -16,6 +15,18 @@ class ConfigManager {
         this.maxSolutionLength = 0;
         this.solutionBreadth = 0;
         this.puzzleSelect = 0;
+        this.puzzles = [
+            "SLIOURWKHNJG",
+            "ARNPDCUIMTLO",
+            "AERUCTSYIQLV",
+            "TKLUAINYEBZH",
+            "NEUICKWRPTAL",
+            "AUEVCNRIOGLF",
+            "QKIHMUAOSFRE",
+            "OEPBHYKSRUCA",
+            "OIVBGRPMDEAY",
+            "YHOLFVRTNIWG"
+        ]
         this.dictionarySelect = 0;
         this.dictionary = [
             {
@@ -38,6 +49,19 @@ class ConfigManager {
         this.configPath = './config.json';
         this.solutionPath = './output/solutions.txt';
         this.basePath = '';
+        this.configValidationMap = {
+            willSort: this.setBoolean,
+            willLimit: this.setBoolean,
+            silenceAllOutput: this.setBoolean,
+            silenceProgressOutput: this.setBoolean,
+            minWordLength: this.setMinWordLength,
+            maxWordLength: this.setMaxWordLength,
+            maxSolutionLength: this.setMaxSolutionLength,
+            solutionBreadth: this.setSolutionBreadth,
+            puzzleSelect: this.setPuzzleSelect,
+            dictionarySelect: this.setDictSelect,
+            solutionPath: this.setSolutionPath
+        }
     }
 
     /**
@@ -61,47 +85,23 @@ class ConfigManager {
         const configData = readConfigFile();
         if (typeof configData !== 'object') { return }
         const configEntries = Object.entries(configData);
-        for (const [key, value] of configEntries) {
-            switch (key) {
-                case 'willSort':
-                    this.setBoolean(key, value);
-                    break;
-                case 'willLimit':
-                    this.setBoolean(key, value);
-                    break;
-                case 'silenceAllOutput':
-                    this.setBoolean(key, value);
-                    break;
-                case 'silenceProgressOutput':
-                    this.setBoolean(key, value);
-                    break;
-                case 'minWordLength':
-                    this.setMinWordLength(key, value);
-                    break;
-                case 'maxWordLength':
-                    this.setMaxWordLength(key, value);
-                    break;
-                case 'maxSolutionLength':
-                    this.setMaxSolutionLength(key, value);
-                    break;
-                case 'solutionBreadth':
-                    this.setSolutionBreadth(key, value);
-                    break;
-                case 'puzzleSelect':
-                    this.setPuzzleSelect(key, value);
-                    break;
-                case 'dictionarySelect':
-                    this.setDictSelect(key, value);
-                    break;
-                case 'solutionPath':
-                    this.setSolutionPath(key, value);
-                    break;
-                default:
-                    break;
-            }
-        }
+        this.setConfigurableProperties(configEntries);
         this.setBasePath(basePath);
         this.valid = true;
+    }
+
+    /**
+     * Parses the provided configuration object and applies the appropriate setProperty() function
+     * to ensure value validation is performed.
+     * @param {Object}} configEntries - a configuration object to use as a source of new values
+     */
+    setConfigurableProperties(configEntries) {
+        for (const [key, value] of configEntries) {
+            const validationFunction = this.configValidationMap[key];
+            if (validationFunction) {
+                validationFunction.call(this, key, value);
+            }
+        }
     }
 
     /**
@@ -127,81 +127,95 @@ class ConfigManager {
      * Set a boolean configuration property.
      * @param {string} key - The configuration property key
      * @param {boolean} value - The configuration property value
+     * @returns true if the new value is accepted and set
      */
     setBoolean(key, value) {
-        if (typeof value !== 'boolean') { return }
+        if (typeof value !== 'boolean') { return false }
         this[key] = value;
+        return true;
     }
 
     /**
      * Set the minimum word length.
      * @param {string} key - The configuration property key
      * @param {number} value - The minimum word length
+     * @returns true if the new value is accepted and set
      */
     setMinWordLength(key, value) {
-        if (typeof value !== 'number') { return }
-        if (value < 3) { return }
+        if (typeof value !== 'number') { return false }
+        if (value < 3) { return false }
         this[key] = value;
         if (this.minWordLength > this.maxWordLength) {
             this.maxWordLength = this.minWordLength;
         }
+        return true;
     }
 
     /**
      * Set the maximum word length.
      * @param {string} key - The configuration property key
      * @param {number} value - The maximum word length
+     * @returns true if the new value is accepted and set
      */
     setMaxWordLength(key, value) {
-        if (typeof value !== 'number') { return }
-        if (value < 3) { return }
+        if (typeof value !== 'number') { return false }
+        if (value < 3) { return false }
         this[key] = value;
         if (this.maxWordLength < this.minWordLength) {
             this.minWordLength = this.maxWordLength;
         }
+        return true;
     }
 
     /**
      * Set the maximum solution length.
      * @param {string} key - The configuration property key
      * @param {number} value - The maximum solution length
+     * @returns true if the new value is accepted and set
      */
     setMaxSolutionLength(key, value) {
-        if (typeof value !== 'number') { return }
-        if (value < 1) { return }
+        if (typeof value !== 'number') { return false }
+        if (value < 1) { return false }
         this[key] = value;
+        return true;
     }
 
     /**
      * Set the solution breadth.
      * @param {string} key - The configuration property key
      * @param {number} value - The solution breadth
+     * @returns true if the new value is accepted and set
      */
     setSolutionBreadth(key, value) {
-        if (typeof value !== 'number') { return }
+        if (typeof value !== 'number') { return false }
         this[key] = value;
+        return true;
     }
 
     /**
      * Set the puzzle selector index.
      * @param {string} key - The configuration property key
      * @param {number} value - The selected puzzle index
+     * @returns true if the new value is accepted and set
      */
     setPuzzleSelect(key, value) {
-        if (typeof value !== 'number') { return }
-        if (value < 0 || value >= getPuzzleCount()) { return }
+        if (typeof value !== 'number') { return false }
+        if (value < 0 || value >= this.puzzles.length) { return false }
         this[key] = value;
+        return true;
     }
 
     /**
      * Set the dictionary selector index.
      * @param {string} key - The configuration property key
      * @param {number} value - The selected dictionary index
+     * @returns true if the new value is accepted and set
      */
     setDictSelect(key, value) {
-        if (typeof value !== 'number') { return }
-        if (value < 0 || value >= this.dictionary.length) { return }
+        if (typeof value !== 'number') { return false }
+        if (value < 0 || value >= this.dictionary.length) { return false }
         this[key] = value;
+        return true;
     }
 
     /**
@@ -210,8 +224,9 @@ class ConfigManager {
      * @param {string} value - The solution path.
      */
     setSolutionPath(key, value) {
-        if (typeof value !== 'string') { return }
+        if (typeof value !== 'string') { return false }
         this[key] = value;
+        return true;
     }
 
     /**
