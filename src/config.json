@@ -8,6 +8,5 @@
     "maxSolutionLength": 5,
     "solutionBreadth": 0,
     "puzzleSelect": 1,
-    "dictionarySelect": 1,
-    "solutionPath": "./output/solutions.txt"
+    "dictionarySelect": 0
 }

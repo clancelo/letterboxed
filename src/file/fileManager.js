@@ -1,6 +1,7 @@
 import fs from 'fs';
-import { resolve } from 'path';
+import { resolve, join, extname, parse } from 'path';
 import { configManager } from '../puzzle/configManager.js'
+import { config } from 'process';
 
 /**
  * Reads a file of newline-seperated words and returns the words as an array. If
@@ -57,8 +58,8 @@ function readConfigFile() {
 }
 
 /**
- * //TODO docs
- * @returns 
+ * Returns a collection of puzzle strings from the puzzle file.
+ * @returns a collection of puzzle strings
  */
 function readPuzzlesFile() {
     let puzzles = [];
@@ -71,26 +72,43 @@ function readPuzzlesFile() {
     return puzzles;
 }
 
+/**
+ * Processes all files in the dictionary directory and returns a collection of dictionary
+ * entries that the program can access.
+ * @returns a collection of dictionary entries
+ */
 function readDictionaryDirectory() {
-    let dictionaries = [
-        {
-            "name": "default",
-            "path": "./dictionaries/oxford.txt"
-        },
-        {
-            "name": "ox",
-            "path": "./dictionaries/oxford.txt"
-        },
-        {
-            "name": "az",
-            "path": "./dictionaries/az.txt"
-        },
-        {
-            "name": "debug",
-            "path": "./dictionaries/debug.txt"
+    const basePath = resolve(configManager.getBasePath(), configManager.getDictDir());
+    const dictionaryFiles = [];
+    try {
+        const allFiles = fs.readdirSync(basePath);
+        for (let f = 0; f < allFiles.length; f++) {
+            processDictionaryFile(dictionaryFiles, basePath, allFiles[f])
         }
-    ];
-    return dictionaries;
+    } catch (err) {
+        console.error('Error reading dictionary directory');
+    }
+    return dictionaryFiles;
+}
+
+/**
+ * Processes a dictionary file and adds it to the collection if the file is a text file
+ * and not a directory. This function uses the configManager's makeDictionEntry() function
+ * to form the entries.
+ * @param {array} dictionaryFiles - the collection of dictionary entries to populate
+ * @param {string} basePath - the base path for the program
+ * @param {string} filename - the dictionary filename with extension
+ */
+function processDictionaryFile(dictionaryFiles, basePath, filename) {
+    if (extname(filename) !== '.txt') { return }
+    const filePath = join(basePath, filename);
+    try {
+        const fileData = fs.statSync(filePath);
+    } catch (err) {
+        console.error('Error reading dictionary directory');
+    }
+    if (fileData.isDirectory()) { return }
+    dictionaryFiles.push(configManager.makeDictionaryEntry(filename, parse(filename).name));
 }
 
 export { readFile, writeSolutionsToFile, readConfigFile, readPuzzlesFile, readDictionaryDirectory };

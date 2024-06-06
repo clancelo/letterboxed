@@ -15,13 +15,14 @@ class ConfigManager {
         this.maxSolutionLength = 0;
         this.solutionBreadth = 0;
         this.puzzleSelect = 0;
-        this.puzzles = [];
         this.dictionarySelect = 0;
+        this.puzzles = [];
         this.dictionary = [];
+        this.basePath = '';
         this.configPath = './config.json';
         this.solutionPath = './output/solutions.txt';
         this.puzzlesPath = './puzzle/puzzles.json';
-        this.basePath = '';
+        this.dictDir = './dictionaries';
         this.configValidationMap = {
             willSort: this.setBoolean,
             willLimit: this.setBoolean,
@@ -32,8 +33,7 @@ class ConfigManager {
             maxSolutionLength: this.setMaxSolutionLength,
             solutionBreadth: this.setSolutionBreadth,
             puzzleSelect: this.setPuzzleSelect,
-            dictionarySelect: this.setDictSelect,
-            solutionPath: this.setSolutionPath
+            dictionarySelect: this.setDictSelect
         }
     }
 
@@ -43,20 +43,19 @@ class ConfigManager {
      */
     initialize(basePath) {
         if (typeof basePath !== 'string') { return }
+        this.setBasePath(basePath);
         this.configurePuzzles();
         this.configureDictionaries();
-        this.initializeConfig(basePath);
+        this.initializeConfig();
     }
 
     /**
-     * Initialize the configuration using the given base path.
-     * @param {string} basePath - The base path for the configuration
+     * Initialize the configuration.
      */
-    initializeConfig(basePath) {
+    initializeConfig() {
         const configData = readConfigFile();
         if (typeof configData !== 'object') { return }
         const configEntries = Object.entries(configData);
-        this.setBasePath(basePath);
         this.setConfigurableProperties(configEntries);
         this.valid = true;
     }
@@ -66,27 +65,8 @@ class ConfigManager {
      * name and path references to valid dictionaries.
      */
     configureDictionaries() {
-        let dictionaryDirectoryData = readDictionaryDirectory()
-        let validatedDictionaryArray = this.extrctValidDictionaries(dictionaryDirectoryData);
-        this.dictionary = validatedDictionaryArray;
-    }
-
-    /**
-     * Extracts the valid dictionary entries from the potential entries. The original array is not
-     * mutated - a new array is returned.
-     * @param {Array} puzzleFileData - an array holding potential dictionary entries
-     * @returns an array of valid dictionary entries with name and path
-     */
-    extrctValidDictionaries(dictionaryDirectoryData) {
-        if (!(Array.isArray(dictionaryDirectoryData))) { return [] }
-        let arrayOfValidDictionaries = [];
-        for (let d = 0; d < dictionaryDirectoryData.length; d++) {
-            if (this.isInvalidDictionaryEntry(dictionaryDirectoryData[d])) {
-                continue;
-            }
-            arrayOfValidDictionaries.push(dictionaryDirectoryData[d]);
-        }
-        return arrayOfValidDictionaries;
+        let dictionaryEntries = readDictionaryDirectory();
+        this.dictionary = dictionaryEntries;
     }
 
     /**
@@ -97,7 +77,7 @@ class ConfigManager {
         if (typeof potentialDictionary !== 'object') { return true }
         if (!('name' in potentialDictionary)) { return true }
         if (!('path' in potentialDictionary)) { return true }
-        if (typeof potentialDictionary['name'] !== 'string') { return true }
+        if (typeof potentialDictionary.name !== 'string') { return true }
         if (typeof potentialDictionary['path'] !== 'string') { return true }
         return false;
     }
@@ -270,17 +250,6 @@ class ConfigManager {
     }
 
     /**
-     * Set the solution path.
-     * @param {string} key - The configuration property key.
-     * @param {string} value - The solution path.
-     */
-    setSolutionPath(key, value) {
-        if (typeof value !== 'string') { return false }
-        this[key] = value;
-        return true;
-    }
-
-    /**
      * Get the selected puzzle index.
      * @returns {number} The selected puzzle index.
      */
@@ -294,6 +263,10 @@ class ConfigManager {
      */
     getDictPath() {
         return this.dictionary[this.dictionarySelect].path;
+    }
+
+    getDictDir() {
+        return this.dictDir;
     }
 
     /**
@@ -398,6 +371,19 @@ class ConfigManager {
      */
     getPuzzles() {
         return this.puzzles;
+    }
+
+    /**
+     * Creates a dictionary entry for a specific file.
+     * @param {string} filename - the filename with extension
+     * @param {string} name - the filename without extension
+     * @returns a dictionary entry containing name and path keys
+     */
+    makeDictionaryEntry(filename, name) {
+        return {
+            name: name,
+            path: this.dictDir + "/" + filename
+        }
     }
 
 }
