@@ -7,6 +7,6 @@
     "maxWordLength": 20,
     "maxSolutionLength": 5,
     "solutionBreadth": 0,
-    "puzzleSelect": 1,
+    "puzzleSelect": 0,
     "dictionarySelect": 0
 }

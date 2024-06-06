@@ -1,5 +1,5 @@
 import { SolutionSet } from './solutionData.js'
-import { configManager } from '../puzzle/configManager.js'
+import { configManager } from '../config/configManager.js'
 
 /**
  * Handles tracking the breadth of the solution space. Each index in the solution is monitored

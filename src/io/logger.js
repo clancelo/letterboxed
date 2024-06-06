@@ -1,5 +1,5 @@
-import { SolutionSet } from './solution/solutionData.js'
-import { configManager } from './puzzle/configManager.js'
+import { SolutionSet } from '../solution/solutionData.js'
+import { configManager } from '../config/configManager.js'
 
 /**
  * Logs a message to the console.
@@ -15,11 +15,11 @@ function log(string) {
  * @param {number} currentWord - The index of the current word being solved for
  * @param {number} maxWords - The number of possible words for a puzzle
  */
-function outputProgress(currentWord, maxWords) {
+function outputProgress(wordIndex, maxWords) {
     if (configManager.getSilenceAllOutput()) { return }
     if (configManager.getSilenceProgressOutput()) { return }
-    if (currentWord % (maxWords > 1000 ? 50 : 10) === 0) {
-        console.log(currentWord + " / " + maxWords);
+    if (wordIndex % Math.max(0, Math.floor(maxWords / 10)) === 0 && wordIndex !== 0) {
+        process.stdout.write("| ");
     }
 }
 

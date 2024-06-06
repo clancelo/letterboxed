@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { resolve, join, extname, parse } from 'path';
-import { configManager } from '../puzzle/configManager.js'
-import { config } from 'process';
+import { configManager } from '../config/configManager.js'
 
 /**
  * Reads a file of newline-seperated words and returns the words as an array. If
@@ -49,6 +48,7 @@ function writeSolutionsToFile(solutionsArray) {
 function readConfigFile() {
     let config = {};
     try {
+        let t = resolve(configManager.getBasePath(), configManager.getConfigPath())
         const data = fs.readFileSync(resolve(configManager.getBasePath(), configManager.getConfigPath()), 'utf8');
         config = JSON.parse(data);
     } catch (err) {
@@ -104,10 +104,10 @@ function processDictionaryFile(dictionaryFiles, basePath, filename) {
     const filePath = join(basePath, filename);
     try {
         const fileData = fs.statSync(filePath);
+        if (fileData.isDirectory()) { return }
     } catch (err) {
         console.error('Error reading dictionary directory');
     }
-    if (fileData.isDirectory()) { return }
     dictionaryFiles.push(configManager.makeDictionaryEntry(filename, parse(filename).name));
 }
 

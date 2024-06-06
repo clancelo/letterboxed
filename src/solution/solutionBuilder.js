@@ -2,8 +2,8 @@ import { getPuzzleLetters } from '../puzzle/puzzleManager.js'
 import { SolutionSet, Solution } from './solutionData.js'
 import { breadthLimiter } from './breadthLimiter.js'
 import { WordSet } from '../word/wordData.js'
-import { configManager } from '../puzzle/configManager.js'
-import { Log } from '../logger.js'
+import { configManager } from '../config/configManager.js'
+import { Log } from '../io/logger.js'
 
 /**
  * Finds and stores solutions to the puzzle starting with the provided word. Input validation is

@@ -1,27 +1,24 @@
-import { readFile, writeSolutionsToFile } from './file/fileManager.js'
+import { readFile, writeSolutionsToFile } from './io/fileManager.js'
 import { getValidWords } from './word/wordBuilder.js'
 import { getSolutions } from './solution/solutionBuilder.js'
-import { configManager } from './puzzle/configManager.js'
-import { Log } from './logger.js'
+import { configManager } from './config/configManager.js'
+import { Log } from './io/logger.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-Log.programStart();
-Log.phaseStart("Configuration");
+// Configure
 configManager.initialize(dirname(fileURLToPath(import.meta.url)));
 if (!(configManager.isValid())) { Log.programEnd(null) }
-Log.phaseEnd(true);
 
-Log.phaseStart("Input");
+// Solve
 const allWordsFromDictionary = readFile();
-Log.phaseEnd(true);
-
-Log.phaseStart("Solutions");
 const validPuzzleWords = getValidWords(allWordsFromDictionary);
-const puzzleSolutions = getSolutions(validPuzzleWords);
-Log.phaseEnd(true);
 
-Log.phaseStart("Output");
+// TODO //
+// Sort words by different rating and add rating to all collections in WordSet
+
+const puzzleSolutions = getSolutions(validPuzzleWords);
+
+// Output
 writeSolutionsToFile(puzzleSolutions.allSolutions);
-Log.phaseEnd(true);
 Log.programEnd(puzzleSolutions);

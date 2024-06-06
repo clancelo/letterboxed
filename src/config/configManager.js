@@ -1,4 +1,4 @@
-import { readConfigFile, readPuzzlesFile, readDictionaryDirectory } from '../file/fileManager.js'
+import { readConfigFile, readPuzzlesFile, readDictionaryDirectory } from '../io/fileManager.js'
 
 /**
  * Class representing a configuration manager.
@@ -19,7 +19,7 @@ class ConfigManager {
         this.puzzles = [];
         this.dictionary = [];
         this.basePath = '';
-        this.configPath = './config.json';
+        this.configPath = './config/config.json';
         this.solutionPath = './output/solutions.txt';
         this.puzzlesPath = './puzzle/puzzles.json';
         this.dictDir = './dictionaries';

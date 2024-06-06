@@ -1,4 +1,4 @@
-import { configManager } from './configManager.js'
+import { configManager } from '../config/configManager.js'
 /**
  * An encapsulation of a specifi location within the LetterBoxed puzzle. Each location has an id 
  * value (0-11, clockwise from the top left) and a letter associated with it. Both of these values
