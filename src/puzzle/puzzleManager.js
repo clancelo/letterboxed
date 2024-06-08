@@ -1,5 +1,4 @@
-import { config } from '../config.js'
-
+import { configManager } from '../config/configManager.js'
 /**
  * An encapsulation of a specifi location within the LetterBoxed puzzle. Each location has an id 
  * value (0-11, clockwise from the top left) and a letter associated with it. Both of these values
@@ -35,33 +34,12 @@ function buildPuzzle(puzzleString) {
 }
 
 /**
- * Puzzle management object governing which puzzle is to be solved.
- * 
- * currentPuzzleIndex - the index into the archive of the puzzle to be solved
- * archive - a collection of puzzle arrays
- */
-const puzzleManager = {
-    currentPuzzleIndex: 0,
-    archive: [
-        buildPuzzle('ARNPDCUIMTLO'),
-        buildPuzzle('AERUCTSYIQLV'),
-        buildPuzzle('TKLUAINYEBZH'),
-        buildPuzzle('NEUICKWRPTAL'),
-        buildPuzzle('AUEVCNRIOGLF'),
-        buildPuzzle('QKIHMUAOSFRE'),
-        buildPuzzle('OEPBHYKSRUCA'),
-        buildPuzzle('OIVBGRPMDEAY'),
-        buildPuzzle('YHOLFVRTNIWG'),
-    ]
-}
-
-/**
  * Gets a puzzle array containing puzzle-id and letter information. The currentPuzzleIndex is used
  * to access the puzzle archive.
  * @returns an array of puzzle objects
  */
 function getPuzzle() {
-    return puzzleManager.archive[config.puzzle_select];
+    return buildPuzzle(configManager.getPuzzles()[configManager.getPuzzleSelect()]);
 }
 
 /**
@@ -69,8 +47,7 @@ function getPuzzle() {
  * @returns an array of letters representing the puzzle
  */
 function getPuzzleLetters() {
-    const puzzle = puzzleManager.archive[config.puzzle_select];
-    return puzzle.map(letter => letter.value);
+    return configManager.getPuzzles()[configManager.getPuzzleSelect()].split('');
 }
 
 export { getPuzzle, getPuzzleLetters, PuzzleLetter };

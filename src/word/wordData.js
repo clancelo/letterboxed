@@ -1,4 +1,4 @@
-import { Log } from '../logger.js'
+import { Log } from '../io/logger.js'
 
 /**
  * An n-graph node that holds puzzle-id, letter, and graph depth. The id is the location within the
@@ -91,6 +91,8 @@ class WordSet {
         const firstLetter = word[0];
         const lastLetter = word[word.length - 1];
         const wordRating = this.getWordRating(word);
+        //TODO begin changing the rating to new equation and store the rating with each collection, 
+        // so they can be sorted by rating more easily
         this.allWords[word] = wordRating;
         this.addToCollection(this.startsWith, firstLetter, word);
         this.addToCollection(this.endsWith, lastLetter, word);

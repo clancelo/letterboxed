@@ -1,0 +1,12 @@
+{
+    "willSort": true,
+    "willLimit": true,
+    "silenceAllOutput": false,
+    "silenceProgressOutput": false,
+    "minWordLength": 3,
+    "maxWordLength": 20,
+    "maxSolutionLength": 5,
+    "solutionBreadth": 0,
+    "puzzleSelect": 0,
+    "dictionarySelect": 0
+}

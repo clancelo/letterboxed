@@ -1,5 +1,5 @@
 import { SolutionSet } from './solutionData.js'
-import { config } from '../config.js'
+import { configManager } from '../config/configManager.js'
 
 /**
  * Handles tracking the breadth of the solution space. Each index in the solution is monitored
@@ -13,7 +13,7 @@ class BreadthLimiter {
      * to effect.
      */
     constructor() {
-        this.counts = new Array(config.max_solution_length).fill(1);
+        this.counts = new Array(configManager.getMaxSolutionLength()).fill(1);
         this.limitLevel = 0;
     }
 
@@ -71,7 +71,7 @@ class BreadthLimiter {
      * @returns {number} - the maximum solution length
      */
     getLength() {
-        return config.max_solution_length;
+        return configManager.getMaxSolutionLength();
     }
 }
 
@@ -83,7 +83,7 @@ class BreadthLimiter {
  * @returns 
  */
 function hasReachedLimit() {
-    if (!config.will_limit) { return false }
+    if (!configManager.getWillLimit()) { return false }
     if (limiter.getLimit() > 0) {
         limiter.decrementLimit();
         return true;
@@ -96,7 +96,7 @@ function hasReachedLimit() {
  * @param {SolutionSet} solutionSet - the SolutionSet being examined by the breadth limiter
  */
 function update(solutionSet) {
-    if (!config.will_limit) { return }
+    if (!configManager.getWillLimit()) { return }
     if (solutionSet.count <= 1) { return }
     if (!(solutionSet instanceof SolutionSet)) { return }
     updateCounts(solutionSet);
@@ -143,7 +143,7 @@ function updateLimit(solutionSet) {
  * @returns {boolean} - true if the limit has been exceeded, false otherwise
  */
 function limitExceededForIndex(index) {
-    return limiter.getCount(index) >= Math.pow(2, limiter.getLength() - index - config.solution_breadth)
+    return limiter.getCount(index) >= Math.pow(2, limiter.getLength() - index - configManager.getSolutionBreadth())
 }
 
 // This module holds state while the puzzle is solved.
