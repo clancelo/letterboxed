@@ -2,3 +2,4 @@ draft_scripts/
 .vscode/
 notes/
 output/
+node_modules/
